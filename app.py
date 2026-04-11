@@ -3,12 +3,11 @@ import requests
 from datetime import datetime
 import time
 import math
-import pytz  # ✅ added for correct timezone
 
 # ----------------------------
 # CONFIG
 # ----------------------------
-API_KEY = "PASTE_YOUR_API_SPORTS_KEY"
+API_KEY = "861e03a7b958c0290c80086dfde844de"
 
 HEADERS = {
     "x-apisports-key": API_KEY
@@ -51,9 +50,8 @@ def can_use():
 # ----------------------------
 @st.cache_data(ttl=300)
 def get_matches():
-    # ✅ FIXED TIMEZONE (MAIN FIX)
-    tz = pytz.timezone("Asia/Beirut")
-    today = datetime.now(tz).strftime("%Y-%m-%d")
+    # ✅ FIXED DATE (no pytz needed)
+    today = datetime.now().strftime("%Y-%m-%d")
 
     url = f"{BASE_URL}/fixtures?date={today}&timezone=Asia/Beirut"
     return requests.get(url, headers=HEADERS).json().get("response", [])
