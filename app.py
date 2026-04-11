@@ -60,39 +60,48 @@ def get_last(team_id):
     return requests.get(url, headers=HEADERS).json().get("response", [])
 
 # ----------------------------
-# TEAM STATS
+# FIXED TEAM STATS (NEW)
 # ----------------------------
 def team_stats(team_id):
     matches = get_last(team_id)
 
-    goals = []
-    conceded = []
+    home_scored, home_conceded = [], []
+    away_scored, away_conceded = [], []
 
     for m in matches:
         if m["teams"]["home"]["id"] == team_id:
-            goals.append(m["goals"]["home"])
-            conceded.append(m["goals"]["away"])
+            home_scored.append(m["goals"]["home"])
+            home_conceded.append(m["goals"]["away"])
         else:
-            goals.append(m["goals"]["away"])
-            conceded.append(m["goals"]["home"])
+            away_scored.append(m["goals"]["away"])
+            away_conceded.append(m["goals"]["home"])
 
-    if not goals:
-        return (1.2, 1.2)
+    home_attack = sum(home_scored)/len(home_scored) if home_scored else 1.2
+    home_defense = sum(home_conceded)/len(home_conceded) if home_conceded else 1.2
 
-    return sum(goals)/len(goals), sum(conceded)/len(conceded)
+    away_attack = sum(away_scored)/len(away_scored) if away_scored else 1.2
+    away_defense = sum(away_conceded)/len(away_conceded) if away_conceded else 1.2
+
+    return home_attack, home_defense, away_attack, away_defense
 
 # ----------------------------
-# POISSON MODEL
+# POISSON
 # ----------------------------
 def poisson(lmbda, k):
     return (math.exp(-lmbda) * (lmbda ** k)) / math.factorial(k)
 
+# ----------------------------
+# FIXED PREDICTION (NEW)
+# ----------------------------
 def predict(t1_id, t2_id):
-    g1, d1 = team_stats(t1_id)
-    g2, d2 = team_stats(t2_id)
 
-    xg1 = (g1 + d2) / 2
-    xg2 = (g2 + d1) / 2
+    t1_home_att, t1_home_def, t1_away_att, t1_away_def = team_stats(t1_id)
+    t2_home_att, t2_home_def, t2_away_att, t2_away_def = team_stats(t2_id)
+
+    league_avg = 1.4
+
+    xg1 = (t1_home_att * t2_away_def) / league_avg + 0.3
+    xg2 = (t2_away_att * t1_home_def) / league_avg
 
     probs = {}
 
@@ -100,15 +109,12 @@ def predict(t1_id, t2_id):
         for j in range(6):
             probs[(i, j)] = poisson(xg1, i) * poisson(xg2, j)
 
-    # markets
-    btts = sum(p for (i,j), p in probs.items() if i>0 and j>0)
-    over15 = sum(p for (i,j), p in probs.items() if i+j > 1)
-    over25 = sum(p for (i,j), p in probs.items() if i+j > 2)
-
-    # winner
-    home_win = sum(p for (i,j), p in probs.items() if i>j)
+    home = sum(p for (i,j), p in probs.items() if i>j)
     draw = sum(p for (i,j), p in probs.items() if i==j)
-    away_win = sum(p for (i,j), p in probs.items() if i<j)
+    away = sum(p for (i,j), p in probs.items() if i<j)
+
+    over25 = sum(p for (i,j), p in probs.items() if i+j>2)
+    btts = sum(p for (i,j), p in probs.items() if i>0 and j>0)
 
     best_score = max(probs, key=probs.get)
 
@@ -116,12 +122,11 @@ def predict(t1_id, t2_id):
         "score": f"{best_score[0]} - {best_score[1]}",
         "xg1": round(xg1,2),
         "xg2": round(xg2,2),
-        "btts": round(btts*100,1),
-        "over15": round(over15*100,1),
-        "over25": round(over25*100,1),
-        "home": round(home_win*100,1),
+        "home": round(home*100,1),
         "draw": round(draw*100,1),
-        "away": round(away_win*100,1)
+        "away": round(away*100,1),
+        "over25": round(over25*100,1),
+        "btts": round(btts*100,1)
     }
 
 # ----------------------------
@@ -176,8 +181,8 @@ if st.button("🚀 RUN AI ANALYSIS"):
     st.subheader("🎯 Betting Markets")
 
     st.write(f"BTTS: {pred['btts']}%")
-    st.write(f"Over 1.5 Goals: {pred['over15']}%")
     st.write(f"Over 2.5 Goals: {pred['over25']}%")
 
     st.markdown('</div>', unsafe_allow_html=True)
+
    
