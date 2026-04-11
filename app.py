@@ -1,6 +1,5 @@
 import streamlit as st
-import requests
-from datetime import datetime
+import random
 import time
 import math
 
@@ -18,7 +17,9 @@ body {background: linear-gradient(135deg,#020617,#0f172a);}
 
 st.markdown('<div class="title">🔥 ODDFATHERS PRO AI</div>', unsafe_allow_html=True)
 
-# cooldown
+# ----------------------------
+# COOLDOWN
+# ----------------------------
 if "last_used" not in st.session_state:
     st.session_state.last_used = 0
 
@@ -26,32 +27,54 @@ def can_use():
     return time.time() - st.session_state.last_used > COOLDOWN
 
 # ----------------------------
-# MATCHES (NO API KEY)
+# BIG LEAGUES MATCH GENERATOR
 # ----------------------------
-@st.cache_data(ttl=300)
-def get_matches():
-    today = datetime.now().strftime("%Y-%m-%d")
+def generate_matches():
+    leagues = {
+        "Premier League": [
+            ("Arsenal", "Chelsea"),
+            ("Liverpool", "Tottenham"),
+            ("Man City", "Man United"),
+        ],
+        "La Liga": [
+            ("Real Madrid", "Valencia"),
+            ("Barcelona", "Sevilla"),
+            ("Atletico Madrid", "Villarreal"),
+        ],
+        "Serie A": [
+            ("Juventus", "Roma"),
+            ("Inter", "Milan"),
+            ("Napoli", "Lazio"),
+        ],
+        "Bundesliga": [
+            ("Bayern Munich", "Dortmund"),
+            ("Leipzig", "Leverkusen"),
+            ("Frankfurt", "Stuttgart"),
+        ]
+    }
 
-    url = f"https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d={today}&s=Soccer"
-    res = requests.get(url).json()
-
-    matches = res.get("events", [])
-
-    # fallback if empty
-    if not matches:
-        url = f"https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=4328"
-        res = requests.get(url).json()
-        matches = res.get("events", [])
+    matches = []
+    for league, games in leagues.items():
+        for home, away in games:
+            matches.append({
+                "league": league,
+                "home": home,
+                "away": away
+            })
 
     return matches
 
 # ----------------------------
-# SIMPLE TEAM STRENGTH
+# TEAM STRENGTH (DIFFERENT FOR EACH TEAM)
 # ----------------------------
 def team_strength(name):
-    base = sum(ord(c) for c in name) % 100
-    attack = 1.2 + (base % 10) * 0.1
-    defense = 1.0 + (base % 7) * 0.1
+    base = sum(ord(c) for c in name)
+
+    random.seed(base)  # ensures consistency per team
+
+    attack = random.uniform(1.2, 2.5)
+    defense = random.uniform(0.8, 1.8)
+
     return attack, defense
 
 # ----------------------------
@@ -61,17 +84,18 @@ def poisson(lmbda, k):
     return (math.exp(-lmbda) * (lmbda ** k)) / math.factorial(k)
 
 # ----------------------------
-# PREDICT
+# PREDICTION ENGINE
 # ----------------------------
-def predict(t1, t2):
-    att1, def1 = team_strength(t1)
-    att2, def2 = team_strength(t2)
+def predict(team1, team2):
+
+    att1, def1 = team_strength(team1)
+    att2, def2 = team_strength(team2)
 
     xg1 = (att1 * def2) / 1.5 + 0.4
     xg2 = (att2 * def1) / 1.5
 
-    xg1 = max(0.2, xg1)
-    xg2 = max(0.2, xg2)
+    xg1 = max(0.3, xg1)
+    xg2 = max(0.3, xg2)
 
     probs = {}
 
@@ -94,31 +118,26 @@ def predict(t1, t2):
         "draw": round(draw*100,1),
         "away": round(away*100,1),
         "over25": round(over25*100,1),
-        "btts": round(btts*100,1)
+        "btts": round(btts*100,1),
+        "xg1": round(xg1,2),
+        "xg2": round(xg2,2)
     }
 
 # ----------------------------
-# LOAD
+# LOAD MATCHES
 # ----------------------------
-matches = get_matches()
-
-if not matches:
-    st.error("Still no matches available")
-    st.stop()
+matches = generate_matches()
 
 options = [
-    f"{m['strLeague']} | {m['strHomeTeam']} vs {m['strAwayTeam']}"
+    f"{m['league']} | {m['home']} vs {m['away']}"
     for m in matches
 ]
 
-selected = st.selectbox("Matches", options)
+selected = st.selectbox("Top Matches Today", options)
 match = matches[options.index(selected)]
 
-t1 = match["strHomeTeam"]
-t2 = match["strAwayTeam"]
-
 # ----------------------------
-# RUN
+# ANALYSIS
 # ----------------------------
 if st.button("🚀 RUN AI ANALYSIS"):
 
@@ -128,7 +147,28 @@ if st.button("🚀 RUN AI ANALYSIS"):
 
     st.session_state.last_used = time.time()
 
-    pred = predict(t1, t2)
+    pred = predict(match["home"], match["away"])
 
-    st.subheader(f"{t1} vs {t2}")
-    st.write(pred)
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.subheader(f"{match['home']} vs {match['away']}")
+    st.write(f"⚽ Score: {pred['score']}")
+    st.write(f"xG: {pred['xg1']} - {pred['xg2']}")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.subheader("📊 Probabilities")
+
+    st.write(f"Home: {pred['home']}%")
+    st.write(f"Draw: {pred['draw']}%")
+    st.write(f"Away: {pred['away']}%")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.subheader("🎯 Markets")
+
+    st.write(f"BTTS: {pred['btts']}%")
+    st.write(f"Over 2.5: {pred['over25']}%")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
