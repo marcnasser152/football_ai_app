@@ -7,7 +7,7 @@ import math
 # ----------------------------
 # CONFIG
 # ----------------------------
-API_KEY = "PASTE_YOUR_API_SPORTS_KEY"
+API_KEY = "861e03a7b958c0290c80086dfde844de"
 
 HEADERS = {
     "x-apisports-key": API_KEY
