@@ -42,13 +42,34 @@ def can_use():
 # GET MATCHES (TheSportsDB)
 # ----------------------------
 @st.cache_data(ttl=300)
+@st.cache_data(ttl=300)
 def get_matches():
     today = datetime.now().strftime("%Y-%m-%d")
-    
-    url = f"https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d={today}&s=Soccer"
-    res = requests.get(url).json()
-    
-    return res.get("events", [])
+
+    # 1️⃣ Try API-Football (BEST DATA)
+    url = f"{BASE_URL}/fixtures?date={today}&timezone=Asia/Beirut"
+    res = requests.get(url, headers=HEADERS).json()
+    matches = res.get("response", [])
+
+    # 2️⃣ If empty → TheSportsDB fallback
+    if not matches:
+        url = f"https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d={today}&s=Soccer"
+        res = requests.get(url).json()
+
+        events = res.get("events", [])
+
+        # convert format
+        matches = []
+        for e in events:
+            matches.append({
+                "league": {"name": e["strLeague"]},
+                "teams": {
+                    "home": {"name": e["strHomeTeam"], "id": hash(e["strHomeTeam"])},
+                    "away": {"name": e["strAwayTeam"], "id": hash(e["strAwayTeam"])}
+                }
+            })
+
+    return matches
 
 # ----------------------------
 # SIMPLE TEAM STRENGTH (NAME BASED)
