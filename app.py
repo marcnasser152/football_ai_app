@@ -65,22 +65,30 @@ def get_last(team_id):
 def team_stats(team_id):
     matches = get_last(team_id)
 
+    if not matches:
+        return (1.5, 1.5, 1.5, 1.5)
+
     home_scored, home_conceded = [], []
     away_scored, away_conceded = [], []
 
-    for m in matches:
+    weights = list(range(1, len(matches)+1))  # recent matches matter more
+
+    for idx, m in enumerate(matches):
+        w = weights[idx]
+
         if m["teams"]["home"]["id"] == team_id:
-            home_scored.append(m["goals"]["home"])
-            home_conceded.append(m["goals"]["away"])
+            home_scored.append(m["goals"]["home"] * w)
+            home_conceded.append(m["goals"]["away"] * w)
         else:
-            away_scored.append(m["goals"]["away"])
-            away_conceded.append(m["goals"]["home"])
+            away_scored.append(m["goals"]["away"] * w)
+            away_conceded.append(m["goals"]["home"] * w)
 
-    home_attack = sum(home_scored)/len(home_scored) if home_scored else 1.2
-    home_defense = sum(home_conceded)/len(home_conceded) if home_conceded else 1.2
+    # weighted averages
+    home_attack = sum(home_scored) / sum(weights[:len(home_scored)]) if home_scored else 1.3
+    home_defense = sum(home_conceded) / sum(weights[:len(home_conceded)]) if home_conceded else 1.3
 
-    away_attack = sum(away_scored)/len(away_scored) if away_scored else 1.2
-    away_defense = sum(away_conceded)/len(away_conceded) if away_conceded else 1.2
+    away_attack = sum(away_scored) / sum(weights[:len(away_scored)]) if away_scored else 1.3
+    away_defense = sum(away_conceded) / sum(weights[:len(away_conceded)]) if away_conceded else 1.3
 
     return home_attack, home_defense, away_attack, away_defense
 
