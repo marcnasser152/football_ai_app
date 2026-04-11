@@ -1,8 +1,11 @@
 import streamlit as st
+import math
 import random
 import time
-import math
 
+# ----------------------------
+# CONFIG
+# ----------------------------
 COOLDOWN = 3600
 
 st.set_page_config(page_title="ODDFATHERS PRO", layout="wide")
@@ -27,52 +30,55 @@ def can_use():
     return time.time() - st.session_state.last_used > COOLDOWN
 
 # ----------------------------
-# BIG LEAGUES MATCH GENERATOR
+# MATCHES (ALL BIG LEAGUES)
 # ----------------------------
-def generate_matches():
-    leagues = {
-        "Premier League": [
-            ("Arsenal", "Chelsea"),
-            ("Liverpool", "Tottenham"),
-            ("Man City", "Man United"),
-        ],
-        "La Liga": [
-            ("Real Madrid", "Valencia"),
-            ("Barcelona", "Sevilla"),
-            ("Atletico Madrid", "Villarreal"),
-        ],
-        "Serie A": [
-            ("Juventus", "Roma"),
-            ("Inter", "Milan"),
-            ("Napoli", "Lazio"),
-        ],
-        "Bundesliga": [
-            ("Bayern Munich", "Dortmund"),
-            ("Leipzig", "Leverkusen"),
-            ("Frankfurt", "Stuttgart"),
-        ]
-    }
+def get_matches():
+    return [
+        # Premier League
+        ("Premier League", "Arsenal", "Chelsea"),
+        ("Premier League", "Liverpool", "Tottenham"),
+        ("Premier League", "Man City", "Man United"),
+        ("Premier League", "Newcastle", "Brighton"),
+        ("Premier League", "Aston Villa", "West Ham"),
 
-    matches = []
-    for league, games in leagues.items():
-        for home, away in games:
-            matches.append({
-                "league": league,
-                "home": home,
-                "away": away
-            })
+        # La Liga
+        ("La Liga", "Real Madrid", "Valencia"),
+        ("La Liga", "Barcelona", "Sevilla"),
+        ("La Liga", "Atletico Madrid", "Villarreal"),
+        ("La Liga", "Real Sociedad", "Betis"),
 
-    return matches
+        # Serie A
+        ("Serie A", "Juventus", "Roma"),
+        ("Serie A", "Inter", "Milan"),
+        ("Serie A", "Napoli", "Lazio"),
+        ("Serie A", "Atalanta", "Fiorentina"),
+
+        # Bundesliga
+        ("Bundesliga", "Bayern Munich", "Dortmund"),
+        ("Bundesliga", "Leipzig", "Leverkusen"),
+        ("Bundesliga", "Frankfurt", "Stuttgart"),
+        ("Bundesliga", "Wolfsburg", "Hoffenheim"),
+
+        # Ligue 1
+        ("Ligue 1", "PSG", "Marseille"),
+        ("Ligue 1", "Lyon", "Monaco"),
+        ("Ligue 1", "Lille", "Nice"),
+
+        # Saudi League
+        ("Saudi League", "Al Hilal", "Al Nassr"),
+        ("Saudi League", "Al Ittihad", "Al Ahli"),
+        ("Saudi League", "Al Ettifaq", "Al Taawoun"),
+    ]
 
 # ----------------------------
-# TEAM STRENGTH (DIFFERENT FOR EACH TEAM)
+# TEAM STRENGTH (REALISTIC)
 # ----------------------------
-def team_strength(name):
-    base = sum(ord(c) for c in name)
+def team_strength(team):
+    base = sum(ord(c) for c in team)
 
-    random.seed(base)  # ensures consistency per team
+    random.seed(base)
 
-    attack = random.uniform(1.2, 2.5)
+    attack = random.uniform(1.2, 2.8)
     defense = random.uniform(0.8, 1.8)
 
     return attack, defense
@@ -91,8 +97,9 @@ def predict(team1, team2):
     att1, def1 = team_strength(team1)
     att2, def2 = team_strength(team2)
 
-    xg1 = (att1 * def2) / 1.5 + 0.4
-    xg2 = (att2 * def1) / 1.5
+    # expected goals
+    xg1 = (att1 * def2) / 1.6 + 0.4
+    xg2 = (att2 * def1) / 1.6
 
     xg1 = max(0.3, xg1)
     xg2 = max(0.3, xg2)
@@ -103,38 +110,39 @@ def predict(team1, team2):
         for j in range(6):
             probs[(i, j)] = poisson(xg1, i) * poisson(xg2, j)
 
-    home = sum(p for (i,j), p in probs.items() if i>j)
-    draw = sum(p for (i,j), p in probs.items() if i==j)
-    away = sum(p for (i,j), p in probs.items() if i<j)
+    home = sum(p for (i,j), p in probs.items() if i > j)
+    draw = sum(p for (i,j), p in probs.items() if i == j)
+    away = sum(p for (i,j), p in probs.items() if i < j)
 
-    over25 = sum(p for (i,j), p in probs.items() if i+j>2)
-    btts = sum(p for (i,j), p in probs.items() if i>0 and j>0)
+    over25 = sum(p for (i,j), p in probs.items() if i + j > 2)
+    btts = sum(p for (i,j), p in probs.items() if i > 0 and j > 0)
 
     best = max(probs, key=probs.get)
 
     return {
-        "score": f"{best[0]}-{best[1]}",
-        "home": round(home*100,1),
-        "draw": round(draw*100,1),
-        "away": round(away*100,1),
-        "over25": round(over25*100,1),
-        "btts": round(btts*100,1),
-        "xg1": round(xg1,2),
-        "xg2": round(xg2,2)
+        "score": f"{best[0]} - {best[1]}",
+        "home": round(home * 100, 1),
+        "draw": round(draw * 100, 1),
+        "away": round(away * 100, 1),
+        "over25": round(over25 * 100, 1),
+        "btts": round(btts * 100, 1),
+        "xg1": round(xg1, 2),
+        "xg2": round(xg2, 2)
     }
 
 # ----------------------------
 # LOAD MATCHES
 # ----------------------------
-matches = generate_matches()
+matches = get_matches()
 
 options = [
-    f"{m['league']} | {m['home']} vs {m['away']}"
-    for m in matches
+    f"{league} | {home} vs {away}"
+    for league, home, away in matches
 ]
 
 selected = st.selectbox("Top Matches Today", options)
-match = matches[options.index(selected)]
+
+league, team1, team2 = matches[options.index(selected)]
 
 # ----------------------------
 # ANALYSIS
@@ -147,28 +155,24 @@ if st.button("🚀 RUN AI ANALYSIS"):
 
     st.session_state.last_used = time.time()
 
-    pred = predict(match["home"], match["away"])
+    pred = predict(team1, team2)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader(f"{match['home']} vs {match['away']}")
-    st.write(f"⚽ Score: {pred['score']}")
+    st.subheader(f"{team1} vs {team2}")
+    st.write(f"⚽ Score Prediction: {pred['score']}")
     st.write(f"xG: {pred['xg1']} - {pred['xg2']}")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.subheader("📊 Probabilities")
-
-    st.write(f"Home: {pred['home']}%")
+    st.write(f"Home Win: {pred['home']}%")
     st.write(f"Draw: {pred['draw']}%")
-    st.write(f"Away: {pred['away']}%")
-
+    st.write(f"Away Win: {pred['away']}%")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("🎯 Markets")
-
+    st.subheader("🎯 Betting Markets")
     st.write(f"BTTS: {pred['btts']}%")
-    st.write(f"Over 2.5: {pred['over25']}%")
-
+    st.write(f"Over 2.5 Goals: {pred['over25']}%")
     st.markdown('</div>', unsafe_allow_html=True)
 
