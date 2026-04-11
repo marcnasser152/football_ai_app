@@ -3,11 +3,12 @@ import requests
 from datetime import datetime
 import time
 import math
+import pytz  # ✅ added for correct timezone
 
 # ----------------------------
 # CONFIG
 # ----------------------------
-API_KEY = "861e03a7b958c0290c80086dfde844de"
+API_KEY = "PASTE_YOUR_API_SPORTS_KEY"
 
 HEADERS = {
     "x-apisports-key": API_KEY
@@ -50,7 +51,10 @@ def can_use():
 # ----------------------------
 @st.cache_data(ttl=300)
 def get_matches():
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    # ✅ FIXED TIMEZONE (MAIN FIX)
+    tz = pytz.timezone("Asia/Beirut")
+    today = datetime.now(tz).strftime("%Y-%m-%d")
+
     url = f"{BASE_URL}/fixtures?date={today}&timezone=Asia/Beirut"
     return requests.get(url, headers=HEADERS).json().get("response", [])
 
@@ -60,7 +64,7 @@ def get_last(team_id):
     return requests.get(url, headers=HEADERS).json().get("response", [])
 
 # ----------------------------
-# FIXED TEAM STATS (NEW)
+# TEAM STATS
 # ----------------------------
 def team_stats(team_id):
     matches = get_last(team_id)
@@ -71,7 +75,7 @@ def team_stats(team_id):
     home_scored, home_conceded = [], []
     away_scored, away_conceded = [], []
 
-    weights = list(range(1, len(matches)+1))  # recent matches matter more
+    weights = list(range(1, len(matches)+1))
 
     for idx, m in enumerate(matches):
         w = weights[idx]
@@ -83,7 +87,6 @@ def team_stats(team_id):
             away_scored.append(m["goals"]["away"] * w)
             away_conceded.append(m["goals"]["home"] * w)
 
-    # weighted averages
     home_attack = sum(home_scored) / sum(weights[:len(home_scored)]) if home_scored else 1.3
     home_defense = sum(home_conceded) / sum(weights[:len(home_conceded)]) if home_conceded else 1.3
 
@@ -99,25 +102,21 @@ def poisson(lmbda, k):
     return (math.exp(-lmbda) * (lmbda ** k)) / math.factorial(k)
 
 # ----------------------------
-# FIXED PREDICTION (NEW)
+# PREDICTION
 # ----------------------------
 def predict(t1_id, t2_id):
 
     t1_home_att, t1_home_def, t1_away_att, t1_away_def = team_stats(t1_id)
     t2_home_att, t2_home_def, t2_away_att, t2_away_def = team_stats(t2_id)
 
-    # NEW: create stronger separation
     attack_diff_1 = t1_home_att - t2_away_def
     attack_diff_2 = t2_away_att - t1_home_def
 
-    # NEW: scale differences (this is key)
     xg1 = 1.2 + (attack_diff_1 * 1.5)
     xg2 = 1.0 + (attack_diff_2 * 1.5)
 
-    # home advantage
     xg1 += 0.4
 
-    # clamp to avoid flat models
     xg1 = max(0.2, xg1)
     xg2 = max(0.2, xg2)
 
@@ -202,5 +201,3 @@ if st.button("🚀 RUN AI ANALYSIS"):
     st.write(f"Over 2.5 Goals: {pred['over25']}%")
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-   
