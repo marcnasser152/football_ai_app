@@ -7,7 +7,7 @@ import math
 # ----------------------------
 # CONFIG
 # ----------------------------
-API_KEY = "861e03a7b958c0290c80086dfde844de"
+API_KEY = "PASTE_YOUR_API_SPORTS_KEY"
 
 HEADERS = {
     "x-apisports-key": API_KEY
@@ -37,7 +37,7 @@ body {background: linear-gradient(135deg,#020617,#0f172a);}
 st.markdown('<div class="title">🔥 ODDFATHERS PRO AI</div>', unsafe_allow_html=True)
 
 # ----------------------------
-# COOLDOWN SYSTEM
+# COOLDOWN
 # ----------------------------
 if "last_used" not in st.session_state:
     st.session_state.last_used = 0
@@ -46,15 +46,30 @@ def can_use():
     return time.time() - st.session_state.last_used > COOLDOWN
 
 # ----------------------------
-# API FUNCTIONS
+# API MATCH FETCH (FIXED 🔥)
 # ----------------------------
 @st.cache_data(ttl=300)
 def get_matches():
-    # ✅ FIXED DATE (no pytz needed)
     today = datetime.now().strftime("%Y-%m-%d")
 
+    # 1️⃣ Try today's matches
     url = f"{BASE_URL}/fixtures?date={today}&timezone=Asia/Beirut"
-    return requests.get(url, headers=HEADERS).json().get("response", [])
+    res = requests.get(url, headers=HEADERS).json()
+    matches = res.get("response", [])
+
+    # 2️⃣ If empty → upcoming matches
+    if not matches:
+        url = f"{BASE_URL}/fixtures?next=20"
+        res = requests.get(url, headers=HEADERS).json()
+        matches = res.get("response", [])
+
+    # 3️⃣ If STILL empty → last matches (guaranteed fallback)
+    if not matches:
+        url = f"{BASE_URL}/fixtures?last=20"
+        res = requests.get(url, headers=HEADERS).json()
+        matches = res.get("response", [])
+
+    return matches
 
 @st.cache_data(ttl=600)
 def get_last(team_id):
@@ -100,7 +115,7 @@ def poisson(lmbda, k):
     return (math.exp(-lmbda) * (lmbda ** k)) / math.factorial(k)
 
 # ----------------------------
-# PREDICTION
+# PREDICTION (UNCHANGED)
 # ----------------------------
 def predict(t1_id, t2_id):
 
@@ -150,7 +165,7 @@ def predict(t1_id, t2_id):
 matches = get_matches()
 
 if not matches:
-    st.error("No matches found today")
+    st.error("No matches available (API issue)")
     st.stop()
 
 options = [
@@ -158,7 +173,7 @@ options = [
     for m in matches
 ]
 
-selected = st.selectbox("Today's Matches", options)
+selected = st.selectbox("Matches", options)
 match = matches[options.index(selected)]
 
 t1 = match["teams"]["home"]
@@ -179,23 +194,23 @@ if st.button("🚀 RUN AI ANALYSIS"):
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.subheader(f"{t1['name']} vs {t2['name']}")
-    st.write(f"⚽ Most Likely Score: {pred['score']}")
+    st.write(f"Score: {pred['score']}")
     st.write(f"xG: {pred['xg1']} - {pred['xg2']}")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("📊 Match Probabilities")
+    st.subheader("Probabilities")
 
-    st.write(f"Home Win: {pred['home']}%")
+    st.write(f"Home: {pred['home']}%")
     st.write(f"Draw: {pred['draw']}%")
-    st.write(f"Away Win: {pred['away']}%")
+    st.write(f"Away: {pred['away']}%")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("🎯 Betting Markets")
+    st.subheader("Markets")
 
     st.write(f"BTTS: {pred['btts']}%")
-    st.write(f"Over 2.5 Goals: {pred['over25']}%")
+    st.write(f"Over 2.5: {pred['over25']}%")
 
     st.markdown('</div>', unsafe_allow_html=True)
