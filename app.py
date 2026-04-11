@@ -106,10 +106,20 @@ def predict(t1_id, t2_id):
     t1_home_att, t1_home_def, t1_away_att, t1_away_def = team_stats(t1_id)
     t2_home_att, t2_home_def, t2_away_att, t2_away_def = team_stats(t2_id)
 
-    league_avg = 1.4
+    # NEW: create stronger separation
+    attack_diff_1 = t1_home_att - t2_away_def
+    attack_diff_2 = t2_away_att - t1_home_def
 
-    xg1 = (t1_home_att * t2_away_def) / league_avg + 0.3
-    xg2 = (t2_away_att * t1_home_def) / league_avg
+    # NEW: scale differences (this is key)
+    xg1 = 1.2 + (attack_diff_1 * 1.5)
+    xg2 = 1.0 + (attack_diff_2 * 1.5)
+
+    # home advantage
+    xg1 += 0.4
+
+    # clamp to avoid flat models
+    xg1 = max(0.2, xg1)
+    xg2 = max(0.2, xg2)
 
     probs = {}
 
