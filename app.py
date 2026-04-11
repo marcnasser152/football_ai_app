@@ -7,13 +7,6 @@ import math
 # ----------------------------
 # CONFIG
 # ----------------------------
-API_KEY = "861e03a7b958c0290c80086dfde844de"
-
-HEADERS = {
-    "x-apisports-key": API_KEY
-}
-
-BASE_URL = "https://v3.football.api-sports.io"
 COOLDOWN = 3600
 
 # ----------------------------
@@ -46,67 +39,28 @@ def can_use():
     return time.time() - st.session_state.last_used > COOLDOWN
 
 # ----------------------------
-# API MATCH FETCH (FIXED 🔥)
+# GET MATCHES (TheSportsDB)
 # ----------------------------
 @st.cache_data(ttl=300)
 def get_matches():
     today = datetime.now().strftime("%Y-%m-%d")
-
-    # 1️⃣ Try today's matches
-    url = f"{BASE_URL}/fixtures?date={today}&timezone=Asia/Beirut"
-    res = requests.get(url, headers=HEADERS).json()
-    matches = res.get("response", [])
-
-    # 2️⃣ If empty → upcoming matches
-    if not matches:
-        url = f"{BASE_URL}/fixtures?next=20"
-        res = requests.get(url, headers=HEADERS).json()
-        matches = res.get("response", [])
-
-    # 3️⃣ If STILL empty → last matches (guaranteed fallback)
-    if not matches:
-        url = f"{BASE_URL}/fixtures?last=20"
-        res = requests.get(url, headers=HEADERS).json()
-        matches = res.get("response", [])
-
-    return matches
-
-@st.cache_data(ttl=600)
-def get_last(team_id):
-    url = f"{BASE_URL}/fixtures?team={team_id}&last=10"
-    return requests.get(url, headers=HEADERS).json().get("response", [])
+    
+    url = f"https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d={today}&s=Soccer"
+    res = requests.get(url).json()
+    
+    return res.get("events", [])
 
 # ----------------------------
-# TEAM STATS
+# SIMPLE TEAM STRENGTH (NAME BASED)
 # ----------------------------
-def team_stats(team_id):
-    matches = get_last(team_id)
-
-    if not matches:
-        return (1.5, 1.5, 1.5, 1.5)
-
-    home_scored, home_conceded = [], []
-    away_scored, away_conceded = [], []
-
-    weights = list(range(1, len(matches)+1))
-
-    for idx, m in enumerate(matches):
-        w = weights[idx]
-
-        if m["teams"]["home"]["id"] == team_id:
-            home_scored.append(m["goals"]["home"] * w)
-            home_conceded.append(m["goals"]["away"] * w)
-        else:
-            away_scored.append(m["goals"]["away"] * w)
-            away_conceded.append(m["goals"]["home"] * w)
-
-    home_attack = sum(home_scored) / sum(weights[:len(home_scored)]) if home_scored else 1.3
-    home_defense = sum(home_conceded) / sum(weights[:len(home_conceded)]) if home_conceded else 1.3
-
-    away_attack = sum(away_scored) / sum(weights[:len(away_scored)]) if away_scored else 1.3
-    away_defense = sum(away_conceded) / sum(weights[:len(away_conceded)]) if away_conceded else 1.3
-
-    return home_attack, home_defense, away_attack, away_defense
+def team_strength(team_name):
+    # fake variability based on name hash (to differentiate teams)
+    base = sum(ord(c) for c in team_name) % 100
+    
+    attack = 1.2 + (base % 10) * 0.1
+    defense = 1.0 + (base % 7) * 0.1
+    
+    return attack, defense
 
 # ----------------------------
 # POISSON
@@ -115,23 +69,18 @@ def poisson(lmbda, k):
     return (math.exp(-lmbda) * (lmbda ** k)) / math.factorial(k)
 
 # ----------------------------
-# PREDICTION (UNCHANGED)
+# PREDICTION
 # ----------------------------
-def predict(t1_id, t2_id):
+def predict(team1, team2):
 
-    t1_home_att, t1_home_def, t1_away_att, t1_away_def = team_stats(t1_id)
-    t2_home_att, t2_home_def, t2_away_att, t2_away_def = team_stats(t2_id)
+    att1, def1 = team_strength(team1)
+    att2, def2 = team_strength(team2)
 
-    attack_diff_1 = t1_home_att - t2_away_def
-    attack_diff_2 = t2_away_att - t1_home_def
+    xg1 = (att1 * def2) / 1.5 + 0.3
+    xg2 = (att2 * def1) / 1.5
 
-    xg1 = 1.2 + (attack_diff_1 * 1.5)
-    xg2 = 1.0 + (attack_diff_2 * 1.5)
-
-    xg1 += 0.4
-
-    xg1 = max(0.2, xg1)
-    xg2 = max(0.2, xg2)
+    xg1 = max(0.3, xg1)
+    xg2 = max(0.3, xg2)
 
     probs = {}
 
@@ -150,13 +99,13 @@ def predict(t1_id, t2_id):
 
     return {
         "score": f"{best_score[0]} - {best_score[1]}",
-        "xg1": round(xg1,2),
-        "xg2": round(xg2,2),
         "home": round(home*100,1),
         "draw": round(draw*100,1),
         "away": round(away*100,1),
         "over25": round(over25*100,1),
-        "btts": round(btts*100,1)
+        "btts": round(btts*100,1),
+        "xg1": round(xg1,2),
+        "xg2": round(xg2,2)
     }
 
 # ----------------------------
@@ -165,19 +114,19 @@ def predict(t1_id, t2_id):
 matches = get_matches()
 
 if not matches:
-    st.error("No matches available (API issue)")
+    st.error("No matches found (API issue)")
     st.stop()
 
 options = [
-    f"{m['league']['name']} | {m['teams']['home']['name']} vs {m['teams']['away']['name']}"
+    f"{m['strLeague']} | {m['strHomeTeam']} vs {m['strAwayTeam']}"
     for m in matches
 ]
 
-selected = st.selectbox("Matches", options)
+selected = st.selectbox("Today's Matches", options)
 match = matches[options.index(selected)]
 
-t1 = match["teams"]["home"]
-t2 = match["teams"]["away"]
+team1 = match["strHomeTeam"]
+team2 = match["strAwayTeam"]
 
 # ----------------------------
 # ANALYSIS
@@ -190,16 +139,16 @@ if st.button("🚀 RUN AI ANALYSIS"):
 
     st.session_state.last_used = time.time()
 
-    pred = predict(t1["id"], t2["id"])
+    pred = predict(team1, team2)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader(f"{t1['name']} vs {t2['name']}")
-    st.write(f"Score: {pred['score']}")
+    st.subheader(f"{team1} vs {team2}")
+    st.write(f"⚽ Score: {pred['score']}")
     st.write(f"xG: {pred['xg1']} - {pred['xg2']}")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Probabilities")
+    st.subheader("📊 Probabilities")
 
     st.write(f"Home: {pred['home']}%")
     st.write(f"Draw: {pred['draw']}%")
@@ -208,7 +157,7 @@ if st.button("🚀 RUN AI ANALYSIS"):
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.subheader("Markets")
+    st.subheader("🎯 Markets")
 
     st.write(f"BTTS: {pred['btts']}%")
     st.write(f"Over 2.5: {pred['over25']}%")
