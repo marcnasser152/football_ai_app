@@ -176,3 +176,5 @@ if st.button("🚀 RUN AI ANALYSIS"):
     st.write(f"Over 2.5 Goals: {pred['over25']}%")
     st.markdown('</div>', unsafe_allow_html=True)
 
+
+
