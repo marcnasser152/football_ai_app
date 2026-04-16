@@ -5,7 +5,7 @@ import math
 # ----------------------------
 # CONFIG
 # ----------------------------
-API_KEY = "5e39f2e3f5ee4ed2862023b14e841588"
+API_KEY = "f2a2f4e5979e49adbce8196931fb93d7"
 
 HEADERS = {"X-Auth-Token": API_KEY}
 BASE_URL = "https://api.football-data.org/v4"
