@@ -31,17 +31,10 @@ def fallback_matches():
 # ----------------------------
 def get_matches():
     return [
-        # UEFA Europa League
-        {"league":"UEFA Europa League","home":"Aston Villa","away":"Bologna","date":"Today"},
-        {"league":"UEFA Europa League","home":"Celta Vigo","away":"Freiburg","date":"Today"},
-        {"league":"UEFA Europa League","home":"Nottm Forest","away":"FC Porto","date":"Today"},
-        {"league":"UEFA Europa League","home":"Real Betis","away":"Braga","date":"Today"},
-
-        # Conference League
-        {"league":"UEFA Conference League","home":"AZ Alkmaar","away":"Shakhtar Donetsk","date":"Today"},
-        {"league":"UEFA Conference League","home":"AEK Athens","away":"Rayo Vallecano","date":"Today"},
-        {"league":"UEFA Conference League","home":"Fiorentina","away":"Crystal Palace","date":"Today"},
-        {"league":"UEFA Conference League","home":"Strasbourg","away":"Mainz","date":"Today"},
+       {"league":"England Championship","home":"Blackburn","away":"Coventry","date":"Today"},
+        {"league":"Serie A","home":"Sassuolo","away":"Como","date":"Today"},
+        {"league":"Bundesliga","home":"St Pauli","away":"Koln","date":"Today"},
+        {"league":"Ligue 1","home":"Lens","away":"Toulouse","date":"Today"}
     ]
 
 # ----------------------------
