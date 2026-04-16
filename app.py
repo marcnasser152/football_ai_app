@@ -6,7 +6,7 @@ import random
 # ----------------------------
 # CONFIG
 # ----------------------------
-API_KEY = "PASTE_YOUR_API_KEY"
+API_KEY = "f2a2f4e5979e49adbce8196931fb93d7"
 HEADERS = {"X-Auth-Token": API_KEY}
 BASE_URL = "https://api.football-data.org/v4"
 
