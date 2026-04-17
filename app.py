@@ -110,12 +110,25 @@ def fallback_matches():
 # ----------------------------
 def get_matches():
     return [
-       {"league":"England Championship","home":"Blackburn","away":"Coventry","date":"Today"},
-        {"league":"Serie A","home":"Sassuolo","away":"Como","date":"Today"},
-        {"league":"Bundesliga","home":"St Pauli","away":"Koln","date":"Today"},
-        {"league":"Ligue 1","home":"Lens","away":"Toulouse","date":"Today"}
-    ]
+        # Premier League
+        {"league":"Premier League","home":"Brentford","away":"Fulham","date":"Today"},
+        {"league":"Premier League","home":"Leeds","away":"Wolves","date":"Today"},
+        {"league":"Premier League","home":"Newcastle","away":"Bournemouth","date":"Today"},
+        {"league":"Premier League","home":"Tottenham","away":"Brighton","date":"Today"},
+        {"league":"Premier League","home":"Chelsea","away":"Man United","date":"Today"},
 
+        # Bundesliga
+        {"league":"Bundesliga","home":"Leverkusen","away":"Augsburg","date":"Today"},
+        {"league":"Bundesliga","home":"Hoffenheim","away":"Dortmund","date":"Today"},
+        {"league":"Bundesliga","home":"Union Berlin","away":"Wolfsburg","date":"Today"},
+        {"league":"Bundesliga","home":"Werder Bremen","away":"Hamburger","date":"Today"},
+        {"league":"Bundesliga","home":"Frankfurt","away":"RB Leipzig","date":"Today"},
+
+        # Serie A
+        {"league":"Serie A","home":"Udinese","away":"Parma","date":"Today"},
+        {"league":"Serie A","home":"Napoli","away":"Lazio","date":"Today"},
+        {"league":"Serie A","home":"Roma","away":"Atalanta","date":"Today"},
+    ]
 # ----------------------------
 # TEAM STATS (REALISTIC)
 # ----------------------------
