@@ -21,7 +21,7 @@ def fallback_matches():
         {"league":"Premier League","home":"Arsenal","away":"Chelsea","date":"Today"},
         {"league":"Premier League","home":"Liverpool","away":"Tottenham","date":"Today"},
         {"league":"La Liga","home":"Real Madrid","away":"Barcelona","date":"Today"},
-        {"league":"Serie A","home":"Inter","away":"Milan","date":"Today"},
+        {"league":"Serie A","home":"Inter","away":"Milan","date":"Today"}
         {"league":"Bundesliga","home":"Bayern","away":"Dortmund","date":"Today"},
         {"league":"Ligue 1","home":"PSG","away":"Marseille","date":"Today"},
     ]
@@ -33,6 +33,7 @@ def get_matches():
     return [
        {"league":"England Championship","home":"Blackburn","away":"Coventry","date":"Today"},
         {"league":"Serie A","home":"Sassuolo","away":"Como","date":"Today"},
+        {"league":"Serie A","home":"Inter Milan","away":"Cagliari","date":"Today"},
         {"league":"Bundesliga","home":"St Pauli","away":"Koln","date":"Today"},
         {"league":"Ligue 1","home":"Lens","away":"Toulouse","date":"Today"}
     ]
