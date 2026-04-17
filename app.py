@@ -9,17 +9,20 @@ import random
 # ----------------------------
 # LOGIN SYSTEM (PAID USERS)
 # ----------------------------
+# ----------------------------
+# LOGIN SYSTEM (FIXED)
+# ----------------------------
 USERS = {
-    "Ali gh": "ali123",
-    "Mohamad Chami": "chami123",
-    "Karim": "abdelsamad123",
-    "Michaeal": "michael123",
-    "Khattar": "khattar123",
+    "ali gh": "ali123",
+    "mohamad chami": "chami123",
+    "karim abdelsamad": "abdelsamad123",
+    "michaeal": "michael123",
+    "khattar": "khattar123",
     "abed oueidat": "oueidat123",
     "hsen bakri": "bakri123",
     "dani": "dani123",
     "alexy ghaoui": "ghaoui123",
-    "raymond saleh":"saleh123"
+    "raymond saleh": "saleh123"
 }
 
 if "logged_in" not in st.session_state:
@@ -32,8 +35,11 @@ if not st.session_state.logged_in:
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        if username in USERS and USERS[username] == password:
+        username_clean = username.strip().lower()
+
+        if username_clean in USERS and USERS[username_clean] == password:
             st.session_state.logged_in = True
+            st.success("Access Granted")
             st.rerun()
         else:
             st.error("Invalid Username or Password")
