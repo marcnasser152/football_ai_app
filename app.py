@@ -6,6 +6,39 @@ import random
 # ----------------------------
 # CONFIG
 # ----------------------------
+# ----------------------------
+# LOGIN SYSTEM (PAID USERS)
+# ----------------------------
+USERS = {
+    "Ali gh": "ali123",
+    "Mohamad Chami": "chami123",
+    "Karim abdelsamad": "abdelsamad123",
+    "Michaeal": "michael123",
+    "Khattar": "khattar123",
+    "abed oueidat": "oueidat123",
+    "hsen bakri": "bakri123",
+    "dani": "dani123",
+    "alexy ghaoui": "ghaoui123"
+}
+
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if not st.session_state.logged_in:
+    st.title("🔐 ODD FATHERS LOGIN")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        if username in USERS and USERS[username] == password:
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error("Invalid Username or Password")
+
+    st.stop()
+
 API_KEY = "f2a2f4e5979e49adbce8196931fb93d7"
 HEADERS = {"X-Auth-Token": API_KEY}
 BASE_URL = "https://api.football-data.org/v4"
