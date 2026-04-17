@@ -47,6 +47,46 @@ st.set_page_config(page_title="ODD FATHERS", layout="wide")
 st.title("🔥 ODD FATHERS - Reliable AI Predictions")
 
 # ----------------------------
+# TERMS & CONDITIONS
+# ----------------------------
+TERMS_TEXT = """
+ODD FATHERS VIP Channel Terms & Conditions
+
+1. All content is for informational, educational, and entertainment purposes only.
+2. We do not promote or operate gambling.
+3. We do not accept bets or handle money.
+4. No guarantees of wins or profits.
+5. Financial decisions involve risk.
+6. Users are fully responsible for their actions.
+7. We are not responsible for any losses.
+8. Not financial or investment advice.
+9. Subscription fees are non-refundable.
+10. Sharing VIP content is prohibited.
+11. No liability for financial/legal issues.
+12. By agreeing, you confirm you understand all terms.
+"""
+
+if "accepted_terms" not in st.session_state:
+    st.session_state.accepted_terms = False
+
+if not st.session_state.accepted_terms:
+    st.title("📜 Terms & Conditions")
+
+    st.text_area("Read Carefully", TERMS_TEXT, height=300)
+
+    agree = st.checkbox("I agree to the Terms & Conditions")
+
+    if st.button("Continue"):
+        if agree:
+            st.session_state.accepted_terms = True
+            st.success("Access Granted")
+            st.rerun()
+        else:
+            st.error("You must agree before continuing")
+
+    st.stop()
+
+# ----------------------------
 # FALLBACK MATCHES (ALWAYS WORKS)
 # ----------------------------
 def fallback_matches():
