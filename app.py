@@ -7,26 +7,18 @@ import random
 # CONFIG
 # ----------------------------
 # ----------------------------
-# LOGIN SYSTEM (PAID USERS)
 # ----------------------------
-# ----------------------------
-# LOGIN SYSTEM (FIXED)
+# LOGIN SYSTEM (SINGLE USER)
 # ----------------------------
 USERS = {
-    "ali gh": "ali123",
-    "mohamad chami": "chami123",
-    "karim abdelsamad": "abdelsamad123",
-    "michaeal": "michael123",
-    "khattar": "khattar123",
-    "abed oueidat": "oueidat123",
-    "hsen bakri": "bakri123",
-    "dani": "dani123",
-    "alexy ghaoui": "ghaoui123",
-    "raymond saleh": "saleh123"
+    "user": "user123"
 }
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+
+def clean_username(u):
+    return " ".join(u.strip().lower().split())
 
 if not st.session_state.logged_in:
     st.title("🔐 ODD FATHERS LOGIN")
@@ -35,7 +27,7 @@ if not st.session_state.logged_in:
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        username_clean = username.strip().lower()
+        username_clean = clean_username(username)
 
         if username_clean in USERS and USERS[username_clean] == password:
             st.session_state.logged_in = True
