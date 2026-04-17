@@ -12,13 +12,14 @@ import random
 USERS = {
     "Ali gh": "ali123",
     "Mohamad Chami": "chami123",
-    "Karim abdelsamad": "abdelsamad123",
+    "Karim": "abdelsamad123",
     "Michaeal": "michael123",
     "Khattar": "khattar123",
     "abed oueidat": "oueidat123",
     "hsen bakri": "bakri123",
     "dani": "dani123",
-    "alexy ghaoui": "ghaoui123"
+    "alexy ghaoui": "ghaoui123",
+    "raymond saleh":"saleh123"
 }
 
 if "logged_in" not in st.session_state:
