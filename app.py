@@ -102,24 +102,28 @@ def fallback_matches():
 # ----------------------------
 def get_matches():
     return [
-        # Premier League
-        {"league":"Premier League","home":"Brentford","away":"Fulham","date":"Today"},
-        {"league":"Premier League","home":"Leeds","away":"Wolves","date":"Today"},
-        {"league":"Premier League","home":"Newcastle","away":"Bournemouth","date":"Today"},
-        {"league":"Premier League","home":"Tottenham","away":"Brighton","date":"Today"},
-        {"league":"Premier League","home":"Chelsea","away":"Man United","date":"Today"},
+        # 🇩🇪 Bundesliga
+        {"league":"Bundesliga","home":"Freiburg","away":"FC Heidenheim","date":"Today"},
+        {"league":"Bundesliga","home":"Bayern Munich","away":"VfB Stuttgart","date":"Today"},
+        {"league":"Bundesliga","home":"M'Gladbach","away":"Mainz","date":"Today"},
 
-        # Bundesliga
-        {"league":"Bundesliga","home":"Leverkusen","away":"Augsburg","date":"Today"},
-        {"league":"Bundesliga","home":"Hoffenheim","away":"Dortmund","date":"Today"},
-        {"league":"Bundesliga","home":"Union Berlin","away":"Wolfsburg","date":"Today"},
-        {"league":"Bundesliga","home":"Werder Bremen","away":"Hamburger","date":"Today"},
-        {"league":"Bundesliga","home":"Frankfurt","away":"RB Leipzig","date":"Today"},
+        # 🇫🇷 Ligue 1
+        {"league":"Ligue 1","home":"Monaco","away":"Auxerre","date":"Today"},
+        {"league":"Ligue 1","home":"Metz","away":"Paris FC","date":"Today"},
+        {"league":"Ligue 1","home":"PSG","away":"Lyon","date":"Today"},
+        {"league":"Ligue 1","home":"Strasbourg","away":"Rennes","date":"Today"},
 
-        # Serie A
-        {"league":"Serie A","home":"Udinese","away":"Parma","date":"Today"},
-        {"league":"Serie A","home":"Napoli","away":"Lazio","date":"Today"},
-        {"league":"Serie A","home":"Roma","away":"Atalanta","date":"Today"},
+        # 🇮🇹 Serie A
+        {"league":"Serie A","home":"Cremonese","away":"Torino","date":"Today"},
+        {"league":"Serie A","home":"Hellas Verona","away":"AC Milan","date":"Today"},
+        {"league":"Serie A","home":"Pisa","away":"Genoa","date":"Today"},
+        {"league":"Serie A","home":"Juventus","away":"Bologna","date":"Today"},
+
+        # 🇬🇧 Premier League
+        {"league":"Premier League","home":"Aston Villa","away":"Sunderland","date":"Today"},
+        {"league":"Premier League","home":"Everton","away":"Liverpool","date":"Today"},
+        {"league":"Premier League","home":"Nottm Forest","away":"Burnley","date":"Today"},
+        {"league":"Premier League","home":"Man City","away":"Arsenal","date":"Today"},
     ]
 # ----------------------------
 # TEAM STATS (REALISTIC)
