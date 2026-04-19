@@ -2,23 +2,55 @@ import streamlit as st
 import requests
 import math
 import random
+import time
+import datetime
 
 # ----------------------------
-# CONFIG
-# ----------------------------
-# ----------------------------
-# ----------------------------
-# LOGIN SYSTEM (SINGLE USER)
+# USERS (20 CLIENTS)
 # ----------------------------
 USERS = {
-    "user": "user123"
+    "vip001": "A7k2Lp91",
+    "vip002": "X9qT3mZ2",
+    "vip003": "P4nL8sQ1",
+    "vip004": "M2zR7kW9",
+    "vip005": "T8vY3pL6",
+    "vip006": "Q5xN2cB7",
+    "vip007": "H3kP9sD4",
+    "vip008": "Z1mX8rV5",
+    "vip009": "L6qT4yN2",
+    "vip010": "R9bC3kW8",
+    "vip011": "F2vX7mP6",
+    "vip012": "Y8nQ5sL3",
+    "vip013": "D4kR1zT9",
+    "vip014": "S7mB2xV6",
+    "vip015": "K3pL9qW5",
+    "vip016": "U5yN8rC2",
+    "vip017": "B1tX4mZ7",
+    "vip018": "J6kP3sL9",
+    "vip019": "E9vR2qT4",
+    "vip020": "W2mX7nK5"
 }
 
+ACTIVE_USERS = {}
+SESSION_TIMEOUT = 3600
+
+# ----------------------------
+# SESSION INIT
+# ----------------------------
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+if "username" not in st.session_state:
+    st.session_state.username = None
+
+if "login_time" not in st.session_state:
+    st.session_state.login_time = 0
+
+# ----------------------------
+# LOGIN
+# ----------------------------
 def clean_username(u):
-    return " ".join(u.strip().lower().split())
+    return u.strip().lower()
 
 if not st.session_state.logged_in:
     st.title("🔐 ODD FATHERS LOGIN")
@@ -27,105 +59,108 @@ if not st.session_state.logged_in:
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        username_clean = clean_username(username)
+        u = clean_username(username)
 
-        if username_clean in USERS and USERS[username_clean] == password:
+        if u in USERS and USERS[u] == password:
+
+            if u in ACTIVE_USERS:
+                st.error("⚠️ Account already in use")
+                st.stop()
+
+            ACTIVE_USERS[u] = time.time()
+
             st.session_state.logged_in = True
-            st.success("Access Granted")
+            st.session_state.username = u
+            st.session_state.login_time = time.time()
+
             st.rerun()
         else:
             st.error("Invalid Username or Password")
 
     st.stop()
 
-API_KEY = "f2a2f4e5979e49adbce8196931fb93d7"
-HEADERS = {"X-Auth-Token": API_KEY}
-BASE_URL = "https://api.football-data.org/v4"
+# ----------------------------
+# SESSION TIMEOUT
+# ----------------------------
+if time.time() - st.session_state.login_time > SESSION_TIMEOUT:
+    if st.session_state.username in ACTIVE_USERS:
+        ACTIVE_USERS.pop(st.session_state.username)
 
+    st.warning("Session expired")
+    st.session_state.logged_in = False
+    st.rerun()
+
+# ----------------------------
+# PAGE
+# ----------------------------
 st.set_page_config(page_title="ODD FATHERS", layout="wide")
 st.title("🔥 ODD FATHERS - Reliable AI Predictions")
 
 # ----------------------------
-# TERMS & CONDITIONS
+# WATERMARK
+# ----------------------------
+now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+st.markdown(f"""
+<div style="position:fixed;bottom:10px;right:10px;opacity:0.3;">
+{st.session_state.username} | {now}
+</div>
+""", unsafe_allow_html=True)
+
+# ----------------------------
+# ANTI COPY
+# ----------------------------
+st.markdown("""
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+document.body.style.userSelect = "none";
+</script>
+""", unsafe_allow_html=True)
+
+# ----------------------------
+# TERMS
 # ----------------------------
 TERMS_TEXT = """
-ODD FATHERS VIP Channel Terms & Conditions
+ODD FATHERS VIP Terms
 
-1. All content is for informational, educational, and entertainment purposes only.
-2. We do not promote or operate gambling.
-3. We do not accept bets or handle money.
-4. No guarantees of wins or profits.
-5. Financial decisions involve risk.
-6. Users are fully responsible for their actions.
-7. We are not responsible for any losses.
-8. Not financial or investment advice.
-9. Subscription fees are non-refundable.
-10. Sharing VIP content is prohibited.
-11. No liability for financial/legal issues.
-12. By agreeing, you confirm you understand all terms.
+• No guaranteed profits  
+• Informational only  
+• Sharing account = permanent BAN  
 """
 
 if "accepted_terms" not in st.session_state:
     st.session_state.accepted_terms = False
 
 if not st.session_state.accepted_terms:
-    st.title("📜 Terms & Conditions")
-
-    st.text_area("Read Carefully", TERMS_TEXT, height=300)
-
-    agree = st.checkbox("I agree to the Terms & Conditions")
+    st.markdown(f"<div style='height:400px;overflow:auto'>{TERMS_TEXT}</div>", unsafe_allow_html=True)
+    agree = st.checkbox("I agree")
 
     if st.button("Continue"):
         if agree:
             st.session_state.accepted_terms = True
-            st.success("Access Granted")
             st.rerun()
         else:
-            st.error("You must agree before continuing")
+            st.error("You must agree")
 
     st.stop()
 
 # ----------------------------
-# FALLBACK MATCHES (ALWAYS WORKS)
-# ----------------------------
-def fallback_matches():
-    return [
-        {"league":"Premier League","home":"Arsenal","away":"Chelsea","date":"Today"},
-        {"league":"Premier League","home":"Liverpool","away":"Tottenham","date":"Today"},
-        {"league":"La Liga","home":"Real Madrid","away":"Barcelona","date":"Today"},
-        {"league":"Bundesliga","home":"Bayern","away":"Dortmund","date":"Today"},
-        {"league":"Ligue 1","home":"PSG","away":"Marseille","date":"Today"},
-    ]
-
-# ----------------------------
-# GET MATCHES (WITH FALLBACK)
+# MATCHES
 # ----------------------------
 def get_matches():
     return [
-        # 🇬🇧 Premier League
         {"league":"Premier League","home":"Crystal Palace","away":"West Ham","date":"Today"},
-
-        # 🇮🇹 Serie A
         {"league":"Serie A","home":"Lecce","away":"Fiorentina","date":"Today"},
-
-        # 🌏 AFC Champions League Elite
         {"league":"AFC Champions League Elite","home":"Vissel Kobe","away":"Al Ahli","date":"Today"},
     ]
+
 # ----------------------------
-# TEAM STATS (REALISTIC)
+# TEAM STATS
 # ----------------------------
 def get_team_stats(name):
     base = sum(ord(c) for c in name)
     random.seed(base)
+    return random.uniform(1.2, 2.8), random.uniform(0.8, 2.0)
 
-    goals_scored = random.uniform(1.2, 2.8)
-    goals_conceded = random.uniform(0.8, 2.0)
-
-    return goals_scored, goals_conceded
-
-# ----------------------------
-# POISSON
-# ----------------------------
 def poisson(lmbda, k):
     return (math.exp(-lmbda) * (lmbda ** k)) / math.factorial(k)
 
@@ -133,7 +168,6 @@ def poisson(lmbda, k):
 # PREDICT
 # ----------------------------
 def predict(team1, team2):
-
     t1_scored, t1_conceded = get_team_stats(team1)
     t2_scored, t2_conceded = get_team_stats(team2)
 
@@ -143,7 +177,6 @@ def predict(team1, team2):
     xg2 = (t2_scored * t1_conceded) / league_avg
 
     probs = {}
-
     for i in range(6):
         for j in range(6):
             probs[(i, j)] = poisson(xg1, i) * poisson(xg2, j)
@@ -169,7 +202,7 @@ def predict(team1, team2):
     }
 
 # ----------------------------
-# LOAD MATCHES
+# UI
 # ----------------------------
 matches = get_matches()
 
@@ -178,24 +211,29 @@ options = [
     for m in matches
 ]
 
-# SAFE SELECTBOX
-selected_index = st.selectbox(
-    "Select Match",
-    range(len(options)),
-    format_func=lambda i: options[i]
-)
-
+selected_index = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
 match = matches[selected_index]
 
 # ----------------------------
-# RUN ANALYSIS
+# REVEAL SYSTEM
+# ----------------------------
+if "reveal" not in st.session_state:
+    st.session_state.reveal = False
+
+if not st.session_state.reveal:
+    if st.button("🔒 Reveal Predictions"):
+        st.session_state.reveal = True
+        st.rerun()
+    st.stop()
+
+# ----------------------------
+# RUN
 # ----------------------------
 if st.button("🚀 RUN AI ANALYSIS"):
 
     pred = predict(match["home"], match["away"])
 
     st.subheader(f"{match['home']} vs {match['away']}")
-    st.write(f"📅 {match['date']}")
     st.write(f"⚽ Score: {pred['score']}")
     st.write(f"xG: {pred['xg1']} - {pred['xg2']}")
 
