@@ -102,28 +102,14 @@ def fallback_matches():
 # ----------------------------
 def get_matches():
     return [
-        # 🇩🇪 Bundesliga
-        {"league":"Bundesliga","home":"Freiburg","away":"FC Heidenheim","date":"Today"},
-        {"league":"Bundesliga","home":"Bayern Munich","away":"VfB Stuttgart","date":"Today"},
-        {"league":"Bundesliga","home":"M'Gladbach","away":"Mainz","date":"Today"},
-
-        # 🇫🇷 Ligue 1
-        {"league":"Ligue 1","home":"Monaco","away":"Auxerre","date":"Today"},
-        {"league":"Ligue 1","home":"Metz","away":"Paris FC","date":"Today"},
-        {"league":"Ligue 1","home":"PSG","away":"Lyon","date":"Today"},
-        {"league":"Ligue 1","home":"Strasbourg","away":"Rennes","date":"Today"},
+        # 🇬🇧 Premier League
+        {"league":"Premier League","home":"Crystal Palace","away":"West Ham","date":"Today"},
 
         # 🇮🇹 Serie A
-        {"league":"Serie A","home":"Cremonese","away":"Torino","date":"Today"},
-        {"league":"Serie A","home":"Hellas Verona","away":"AC Milan","date":"Today"},
-        {"league":"Serie A","home":"Pisa","away":"Genoa","date":"Today"},
-        {"league":"Serie A","home":"Juventus","away":"Bologna","date":"Today"},
+        {"league":"Serie A","home":"Lecce","away":"Fiorentina","date":"Today"},
 
-        # 🇬🇧 Premier League
-        {"league":"Premier League","home":"Aston Villa","away":"Sunderland","date":"Today"},
-        {"league":"Premier League","home":"Everton","away":"Liverpool","date":"Today"},
-        {"league":"Premier League","home":"Nottm Forest","away":"Burnley","date":"Today"},
-        {"league":"Premier League","home":"Man City","away":"Arsenal","date":"Today"},
+        # 🌏 AFC Champions League Elite
+        {"league":"AFC Champions League Elite","home":"Vissel Kobe","away":"Al Ahli","date":"Today"},
     ]
 # ----------------------------
 # TEAM STATS (REALISTIC)
