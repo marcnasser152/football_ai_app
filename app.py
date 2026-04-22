@@ -1,92 +1,85 @@
 import streamlit as st
+from supabase import create_client
+import uuid
+from datetime import datetime, timedelta
 import requests
 import math
 import random
 import time
-import datetime
 
 # ----------------------------
-# USERS (20 CLIENTS)
+# SUPABASE
 # ----------------------------
-USERS = {
-    "vip001": "A7k2Lp91",
-    "vip002": "X9qT3mZ2",
-    "vip003": "P4nL8sQ1",
-    "vip004": "M2zR7kW9",
-    "vip005": "T8vY3pL6",
-    "vip006": "Q5xN2cB7",
-    "vip007": "H3kP9sD4",
-    "vip008": "Z1mX8rV5",
-    "vip009": "L6qT4yN2",
-    "vip010": "R9bC3kW8",
-    "vip011": "F2vX7mP6",
-    "vip012": "Y8nQ5sL3",
-    "vip013": "D4kR1zT9",
-    "vip014": "S7mB2xV6",
-    "vip015": "K3pL9qW5",
-    "vip016": "U5yN8rC2",
-    "vip017": "B1tX4mZ7",
-    "vip018": "J6kP3sL9",
-    "vip019": "E9vR2qT4",
-    "vip020": "W2mX7nK5"
-}
-
-ACTIVE_USERS = {}
-SESSION_TIMEOUT = 3600
+url = st.secrets["SUPABASE_URL"]
+key = st.secrets["SUPABASE_KEY"]
+supabase = create_client(url, key)
 
 # ----------------------------
-# SESSION INIT
+# SESSION
 # ----------------------------
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-
 if "username" not in st.session_state:
     st.session_state.username = None
-
-if "login_time" not in st.session_state:
-    st.session_state.login_time = 0
+if "session_id" not in st.session_state:
+    st.session_state.session_id = None
 
 # ----------------------------
-# LOGIN
+# LOGIN SYSTEM
 # ----------------------------
-def clean_username(u):
-    return u.strip().lower()
-
 if not st.session_state.logged_in:
+
     st.title("🔐 ODD FATHERS LOGIN")
 
-    username = st.text_input("Username")
+    username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        u = clean_username(username)
 
-        if u in USERS and USERS[u] == password:
+        res = supabase.table("users").select("*").eq("username", username).execute()
 
-            if u in ACTIVE_USERS:
-                st.error("⚠️ Account already in use")
-                st.stop()
+        if not res.data:
+            st.error("User not found")
+            st.stop()
 
-            ACTIVE_USERS[u] = time.time()
+        user = res.data[0]
+
+        if user["banned"]:
+            st.error("Account banned")
+
+        elif user["password"] != password:
+            st.error("Wrong password")
+
+        elif not user["expires_at"]:
+            st.error("No subscription")
+
+        elif datetime.fromisoformat(user["expires_at"]) < datetime.utcnow():
+            st.error("Subscription expired")
+
+        else:
+            session_id = str(uuid.uuid4())
+
+            supabase.table("users").update({
+                "session_id": session_id,
+                "last_login": "now()"
+            }).eq("username", username).execute()
 
             st.session_state.logged_in = True
-            st.session_state.username = u
-            st.session_state.login_time = time.time()
+            st.session_state.username = username
+            st.session_state.session_id = session_id
 
             st.rerun()
-        else:
-            st.error("Invalid Username or Password")
 
     st.stop()
 
 # ----------------------------
-# SESSION TIMEOUT
+# FETCH USER
 # ----------------------------
-if time.time() - st.session_state.login_time > SESSION_TIMEOUT:
-    if st.session_state.username in ACTIVE_USERS:
-        ACTIVE_USERS.pop(st.session_state.username)
+res = supabase.table("users").select("*").eq("username", st.session_state.username).execute()
+user = res.data[0]
 
-    st.warning("Session expired")
+if user["session_id"] != st.session_state.session_id:
+    st.error("⚠️ Account opened on another device")
     st.session_state.logged_in = False
     st.rerun()
 
@@ -99,21 +92,11 @@ st.title("🔥 ODD FATHERS - Reliable AI Predictions")
 # ----------------------------
 # WATERMARK
 # ----------------------------
-now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 st.markdown(f"""
 <div style="position:fixed;bottom:10px;right:10px;opacity:0.3;">
 {st.session_state.username} | {now}
 </div>
-""", unsafe_allow_html=True)
-
-# ----------------------------
-# ANTI COPY
-# ----------------------------
-st.markdown("""
-<script>
-document.addEventListener('contextmenu', event => event.preventDefault());
-document.body.style.userSelect = "none";
-</script>
 """, unsafe_allow_html=True)
 
 # ----------------------------
@@ -124,7 +107,7 @@ ODD FATHERS VIP Terms
 
 • No guaranteed profits  
 • Informational only  
-• Sharing account = permanent BAN  
+• Sharing account = BAN  
 """
 
 if "accepted_terms" not in st.session_state:
@@ -146,34 +129,54 @@ if not st.session_state.accepted_terms:
 # ----------------------------
 # MATCHES
 # ----------------------------
-def get_matches():
-    return [
-        {"league":"Premier League","home":"Crystal Palace","away":"West Ham","date":"Today"},
-        {"league":"Serie A","home":"Lecce","away":"Fiorentina","date":"Today"},
-        {"league":"AFC Champions League Elite","home":"Vissel Kobe","away":"Al Ahli","date":"Today"},
-    ]
+matches = [
+    {"league":"Spain LaLiga","home":"Levante","away":"Sevilla"},
+    {"league":"Spain LaLiga","home":"Rayo Vallecano","away":"Espanyol"},
+    {"league":"Spain LaLiga","home":"Real Oviedo","away":"Villarreal"},
+    {"league":"Germany Bundesliga","home":"VfB Stuttgart","away":"Freiburg"},
+]
+
+options = [f"{m['league']} | {m['home']} vs {m['away']}" for m in matches]
+selected = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
+match = matches[selected]
 
 # ----------------------------
-# TEAM STATS
+# AI ENGINE
 # ----------------------------
 def get_team_stats(name):
     base = sum(ord(c) for c in name)
     random.seed(base)
-    return random.uniform(1.2, 2.8), random.uniform(0.8, 2.0)
+
+    attack = random.uniform(1.2, 2.2)
+    defense = random.uniform(0.9, 1.8)
+
+    elite = ["Real Madrid","Barcelona","Bayern Munich","PSG","Inter","Atletico Madrid","Sevilla","Villarreal"]
+    strong = ["Real Sociedad","Girona","Valencia","Freiburg","Stuttgart"]
+    weak = ["Getafe","Elche","Espanyol","Levante"]
+
+    if name in elite:
+        attack += 0.8
+        defense -= 0.4
+    elif name in strong:
+        attack += 0.4
+        defense -= 0.2
+    elif name in weak:
+        attack -= 0.4
+        defense += 0.3
+
+    return attack, defense
 
 def poisson(lmbda, k):
     return (math.exp(-lmbda) * (lmbda ** k)) / math.factorial(k)
 
-# ----------------------------
-# PREDICT
-# ----------------------------
 def predict(team1, team2):
     t1_scored, t1_conceded = get_team_stats(team1)
     t2_scored, t2_conceded = get_team_stats(team2)
 
     league_avg = 1.4
+    home_advantage = 0.35
 
-    xg1 = (t1_scored * t2_conceded) / league_avg + 0.3
+    xg1 = (t1_scored * t2_conceded) / league_avg + home_advantage
     xg2 = (t2_scored * t1_conceded) / league_avg
 
     probs = {}
@@ -186,36 +189,49 @@ def predict(team1, team2):
     away = sum(p for (i,j), p in probs.items() if i<j)
 
     over25 = sum(p for (i,j), p in probs.items() if i+j>2)
+    over15 = sum(p for (i,j), p in probs.items() if i+j>1)
     btts = sum(p for (i,j), p in probs.items() if i>0 and j>0)
 
-    best = max(probs, key=probs.get)
+    best_score = max(probs, key=probs.get)
+
+    # ✅ FIXED PICK + CONFIDENCE
+    if home > away and home > draw:
+        pick = "Home Win"
+        confidence = home
+    elif away > home and away > draw:
+        pick = "Away Win"
+        confidence = away
+    elif over15 > 0.75:
+        pick = "Over 1.5 Goals"
+        confidence = over15
+    elif over25 > 0.6:
+        pick = "Over 2.5 Goals"
+        confidence = over25
+    elif btts > 0.6:
+        pick = "BTTS (Yes)"
+        confidence = btts
+    else:
+        pick = "No strong bet"
+        confidence = max(home, away, draw)
+
+    confidence = round(confidence * 100, 1)
 
     return {
-        "score": f"{best[0]}-{best[1]}",
+        "score": f"{best_score[0]}-{best_score[1]}",
+        "xg1": round(xg1,2),
+        "xg2": round(xg2,2),
         "home": round(home*100,1),
         "draw": round(draw*100,1),
         "away": round(away*100,1),
         "over25": round(over25*100,1),
+        "over15": round(over15*100,1),
         "btts": round(btts*100,1),
-        "xg1": round(xg1,2),
-        "xg2": round(xg2,2)
+        "confidence": confidence,
+        "pick": pick
     }
 
 # ----------------------------
-# UI
-# ----------------------------
-matches = get_matches()
-
-options = [
-    f"{m['date']} | {m['league']} | {m['home']} vs {m['away']}"
-    for m in matches
-]
-
-selected_index = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
-match = matches[selected_index]
-
-# ----------------------------
-# REVEAL SYSTEM
+# REVEAL
 # ----------------------------
 if "reveal" not in st.session_state:
     st.session_state.reveal = False
@@ -243,5 +259,51 @@ if st.button("🚀 RUN AI ANALYSIS"):
     st.write(f"Away: {pred['away']}%")
 
     st.write("### Markets")
-    st.write(f"BTTS: {pred['btts']}%")
+    st.write(f"Over 1.5: {pred['over15']}%")
     st.write(f"Over 2.5: {pred['over25']}%")
+    st.write(f"BTTS: {pred['btts']}%")
+
+    st.markdown("---")
+    st.subheader("📊 Model Verdict")
+    st.write(f"🎯 Main Pick: {pred['pick']}")
+    st.write(f"📈 Confidence: {pred['confidence']}%")
+
+# ----------------------------
+# ADMIN PANEL
+# ----------------------------
+if user.get("role") == "admin":
+
+    st.markdown("---")
+    st.subheader("⚙️ Admin Panel")
+
+    new_user = st.text_input("New Username")
+    new_pass = st.text_input("New Password")
+
+    if st.button("Create User"):
+        if new_user and new_pass:
+            supabase.table("users").insert({
+                "username": new_user.lower(),
+                "password": new_pass,
+                "banned": False,
+                "expires_at": (datetime.utcnow()+timedelta(days=7)).isoformat(),
+                "role": "user"
+            }).execute()
+            st.success("User created")
+
+    users = supabase.table("users").select("*").execute().data
+
+    for u in users:
+        st.write(u["username"], u["expires_at"])
+
+        col1,col2,col3 = st.columns(3)
+
+        if col1.button(f"Extend {u['username']}"):
+            supabase.rpc("execute_sql", {
+                "sql": f"update users set expires_at = now()+interval '7 days' where username='{u['username']}'"
+            }).execute()
+
+        if col2.button(f"Ban {u['username']}"):
+            supabase.table("users").update({"banned":True}).eq("username",u["username"]).execute()
+
+        if col3.button(f"Reset {u['username']}"):
+            supabase.table("users").update({"session_id":None}).eq("username",u["username"]).execute()
