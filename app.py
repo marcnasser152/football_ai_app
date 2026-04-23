@@ -130,10 +130,12 @@ if not st.session_state.accepted_terms:
 # MATCHES
 # ----------------------------
 matches = [
-    {"league":"Spain LaLiga","home":"Levante","away":"Sevilla"},
-    {"league":"Spain LaLiga","home":"Rayo Vallecano","away":"Espanyol"},
-    {"league":"Spain LaLiga","home":"Real Oviedo","away":"Villarreal"},
-    {"league":"Germany Bundesliga","home":"VfB Stuttgart","away":"Freiburg"},
+    {"league":"England Premier League","home":"Sunderland","away":"Nottm Forest"},
+    {"league":"England Championship","home":"Leicester","away":"Millwall"},
+    {"league":"Spain LaLiga","home":"Real Betis","away":"Real Madrid"},
+    {"league":"Italy Serie A","home":"Napoli","away":"Cremonese"},
+    {"league":"Germany Bundesliga","home":"RB Leipzig","away":"Union Berlin"},
+    {"league":"France Ligue 1","home":"Brest","away":"Lens"},
 ]
 
 options = [f"{m['league']} | {m['home']} vs {m['away']}" for m in matches]
