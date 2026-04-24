@@ -129,15 +129,38 @@ if not st.session_state.accepted_terms:
 # ----------------------------
 # MATCHES
 # ----------------------------
+# ----------------------------
+# MATCHES
+# ----------------------------
 matches = [
-    {"league":"England Premier League","home":"Sunderland","away":"Nottm Forest"},
-    {"league":"England Championship","home":"Leicester","away":"Millwall"},
-    {"league":"Spain LaLiga","home":"Real Betis","away":"Real Madrid"},
-    {"league":"Italy Serie A","home":"Napoli","away":"Cremonese"},
-    {"league":"Germany Bundesliga","home":"RB Leipzig","away":"Union Berlin"},
-    {"league":"France Ligue 1","home":"Brest","away":"Lens"},
-]
+    {"league":"England Premier League","home":"Fulham","away":"Aston Villa"},
+    {"league":"England Premier League","home":"Liverpool","away":"Crystal Palace"},
+    {"league":"England Premier League","home":"West Ham","away":"Everton"},
+    {"league":"England Premier League","home":"Wolves","away":"Tottenham"},
+    {"league":"England Premier League","home":"Arsenal","away":"Newcastle"},
 
+    {"league":"Spain LaLiga","home":"Deportivo Alaves","away":"Mallorca"},
+    {"league":"Spain LaLiga","home":"Getafe","away":"Barcelona"},
+    {"league":"Spain LaLiga","home":"Valencia","away":"Girona"},
+    {"league":"Spain LaLiga","home":"Atletico Madrid","away":"Athletic Club"},
+
+    {"league":"Italy Serie A","home":"Parma","away":"Pisa"},
+    {"league":"Italy Serie A","home":"Bologna","away":"Roma"},
+    {"league":"Italy Serie A","home":"Hellas Verona","away":"Lecce"},
+
+    {"league":"Germany Bundesliga","home":"Augsburg","away":"Frankfurt"},
+    {"league":"Germany Bundesliga","home":"FC Heidenheim","away":"St Pauli"},
+    {"league":"Germany Bundesliga","home":"Koln","away":"Leverkusen"},
+    {"league":"Germany Bundesliga","home":"Mainz","away":"Bayern Munchen"},
+    {"league":"Germany Bundesliga","home":"Wolfsburg","away":"M'gladbach"},
+    {"league":"Germany Bundesliga","home":"Hamburger SV","away":"Hoffenheim"},
+
+    {"league":"France Ligue 1","home":"Lyon","away":"Auxerre"},
+    {"league":"France Ligue 1","home":"Angers","away":"PSG"},
+    {"league":"France Ligue 1","home":"Toulouse","away":"Monaco"},
+
+    {"league":"England FA Cup","home":"Man City","away":"Southampton"},
+]
 options = [f"{m['league']} | {m['home']} vs {m['away']}" for m in matches]
 selected = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
 match = matches[selected]
