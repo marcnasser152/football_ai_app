@@ -38,16 +38,29 @@ if not st.session_state.logged_in:
     .block-container {padding:0 !important;}
     header, footer {visibility:hidden;}
 
-    /* 🔥 BACKGROUND (TRANSPARENT LOGO FIXED) */
+    /* 🔥 BACKGROUND BASE */
     .stApp {
         background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089-removebg-preview.png");
-        background-size: 30%;
         background-position: center;
         background-repeat: no-repeat;
         background-color: black;
     }
 
-    /* 🔥 CENTER EVERYTHING */
+    /* 💻 DESKTOP */
+    @media (min-width: 768px) {
+        .stApp {
+            background-size: 40%;
+        }
+    }
+
+    /* 📱 MOBILE */
+    @media (max-width: 768px) {
+        .stApp {
+            background-size: 80%;
+        }
+    }
+
+    /* CENTER */
     .overlay {
         position: fixed;
         inset: 0;
@@ -56,7 +69,7 @@ if not st.session_state.logged_in:
         align-items: center;
     }
 
-    /* 🔥 BLACK BOX (LOGIN CARD) */
+    /* LOGIN CARD */
     .card {
         width: 340px;
         padding: 35px;
@@ -66,7 +79,7 @@ if not st.session_state.logged_in:
         text-align: center;
     }
 
-    /* 🔥 TEXT INSIDE BOX */
+    /* TITLE */
     .title {
         font-size: 26px;
         font-weight: bold;
@@ -78,6 +91,22 @@ if not st.session_state.logged_in:
         font-size: 13px;
         color: #aaa;
         margin-bottom: 18px;
+    }
+
+    /* STATS */
+    .stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        font-size: 12px;
+        color: #00ffae;
+    }
+
+    .stat-box {
+        background: rgba(255,255,255,0.05);
+        padding: 6px;
+        border-radius: 8px;
+        width: 30%;
     }
 
     /* INPUT */
@@ -106,9 +135,17 @@ if not st.session_state.logged_in:
     st.markdown("<div class='overlay'>", unsafe_allow_html=True)
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-    # 🔥 TEXT IN BLACK BOX
     st.markdown("<div class='title'>ODDFATHERS</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>Your AI system is ready — let it do the work for you.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>AI system • no guessing • just results</div>", unsafe_allow_html=True)
+
+    # 🔥 STATS (ADDED)
+    st.markdown("""
+    <div class="stats">
+        <div class="stat-box">🔥 87% Win</div>
+        <div class="stat-box">📈 +245%</div>
+        <div class="stat-box">👥 46 Online</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
