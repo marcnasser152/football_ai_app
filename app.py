@@ -35,38 +35,44 @@ if not st.session_state.logged_in:
     st.markdown("""
     <style>
 
-    .block-container {padding:0 !important;}
-    header, footer {visibility:hidden;}
-
-    /* 🔥 BACKGROUND (ZOOMED OUT A BIT) */
+    /* CLEAN DARK BACKGROUND */
     .stApp {
-        background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg");
-        background-size: 85%;   /* 👈 adjust here (80–90 is perfect) */
-        background-position: center;
-        background-repeat: no-repeat;
-        background-color: black;
+        background: radial-gradient(circle at top, #0f2027, #000000);
     }
 
-    /* 🔥 CENTER EVERYTHING */
-    .overlay {
-        position: fixed;
-        inset: 0;
+    .block-container {
+        padding-top: 30px;
+    }
+
+    header, footer {
+        visibility: hidden;
+    }
+
+    /* CENTER */
+    .wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
+        height: 80vh;
+        flex-direction: column;
     }
 
-    /* 🔥 BLACK BOX (LOGIN CARD) */
+    /* LOGO */
+    .logo {
+        margin-bottom: 20px;
+    }
+
+    /* LOGIN CARD */
     .card {
-        width: 340px;
+        width: 360px;
         padding: 35px;
         border-radius: 16px;
-        background: rgba(0,0,0,0.85);
-        box-shadow: 0 0 25px rgba(0,255,150,0.25);
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 0 30px rgba(0,255,150,0.2);
         text-align: center;
     }
 
-    /* 🔥 TEXT INSIDE BOX */
     .title {
         font-size: 26px;
         font-weight: bold;
@@ -77,7 +83,7 @@ if not st.session_state.logged_in:
     .subtitle {
         font-size: 13px;
         color: #aaa;
-        margin-bottom: 18px;
+        margin-bottom: 20px;
     }
 
     /* INPUT */
@@ -86,7 +92,7 @@ if not st.session_state.logged_in:
         color: white !important;
         border-radius: 8px !important;
         border: 1px solid #00ffae33 !important;
-        height: 40px;
+        height: 42px;
     }
 
     /* BUTTON */
@@ -98,17 +104,28 @@ if not st.session_state.logged_in:
         color: black;
         font-weight: bold;
         margin-top: 10px;
+        box-shadow: 0 0 10px rgba(0,255,150,0.4);
+    }
+
+    .stButton>button:hover {
+        transform: scale(1.05);
     }
 
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='overlay'>", unsafe_allow_html=True)
+    st.markdown("<div class='wrapper'>", unsafe_allow_html=True)
+
+    # 🔥 LOGO HEADER (clean, centered)
+    st.image(
+        "https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg",
+        width=220
+    )
+
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-    # 🔥 YOUR TEXT IN BLACK BOX
     st.markdown("<div class='title'>ODDFATHERS</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>Your AI system is ready — let it do the work for you.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>AI Football Engine • No Guessing • Just Results</div>", unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
@@ -156,7 +173,6 @@ if not st.session_state.logged_in:
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
-    
 
     
 # ----------------------------
