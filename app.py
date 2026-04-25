@@ -28,65 +28,79 @@ if "session_id" not in st.session_state:
 # ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
+# ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
 if not st.session_state.logged_in:
 
+    st.set_page_config(layout="wide")
+
     st.markdown("""
     <style>
+    /* REMOVE STREAMLIT PADDING */
+    .block-container {
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+        padding-left: 0rem;
+        padding-right: 0rem;
+    }
+
+    header, footer {
+        visibility: hidden;
+    }
+
+    /* FULL SCREEN BACKGROUND */
     .stApp {
         background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/ChatGPT%20Image%20Apr%2025%2C%202026%2C%2011_23_06%20AM.png");
         background-size: cover;
         background-position: center;
-        background-repeat: no-repeat;
+        background-attachment: fixed;
+        height: 100vh;
+        overflow: hidden;
     }
 
-    /* Dark overlay for readability */
-    .stApp::before {
-        content: "";
+    /* DARK OVERLAY */
+    .overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         background: rgba(0,0,0,0.6);
-        z-index: -1;
-    }
-
-    /* Center container */
-    .center-box {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 90vh;
     }
 
-    /* Login card */
+    /* LOGIN CARD */
     .login-card {
-        background: rgba(0, 0, 0, 0.75);
+        background: rgba(0,0,0,0.75);
         padding: 40px;
         border-radius: 20px;
         backdrop-filter: blur(15px);
-        box-shadow: 0 0 40px rgba(0,255,150,0.3);
-        width: 400px;
+        box-shadow: 0 0 50px rgba(0,255,150,0.3);
+        width: 380px;
         text-align: center;
     }
 
     .title {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: bold;
+        color: white;
+    }
+
+    .title span {
         color: #00ffae;
-        margin-bottom: 10px;
     }
 
     .subtitle {
-        color: #ccc;
-        margin-bottom: 25px;
+        color: #aaa;
+        margin-bottom: 20px;
     }
 
-    .stTextInput>div>div>input {
-        background-color: #111;
-        color: white;
+    .stTextInput input {
+        background-color: #111 !important;
+        color: white !important;
         border-radius: 10px;
     }
 
@@ -98,17 +112,13 @@ if not st.session_state.logged_in:
         border-radius: 10px;
         height: 45px;
     }
-
-    .stButton>button:hover {
-        transform: scale(1.05);
-    }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='center-box'>", unsafe_allow_html=True)
+    st.markdown("<div class='overlay'>", unsafe_allow_html=True)
     st.markdown("<div class='login-card'>", unsafe_allow_html=True)
 
-    st.markdown("<div class='title'>WELCOME BACK</div>", unsafe_allow_html=True)
+    st.markdown("<div class='title'>WELCOME <span>BACK</span></div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>Login to your account</div>", unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
