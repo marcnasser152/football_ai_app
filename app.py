@@ -94,20 +94,22 @@ if not st.session_state.logged_in:
     }
 
     /* STATS */
-    .stats {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 18px;
-        font-size: 12px;
-        color: #00ffae;
-    }
+   .stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    font-size: 12px;
+}
 
-    .stat-box {
-        background: rgba(255,255,255,0.05);
-        padding: 6px;
-        border-radius: 8px;
-        width: 30%;
-    }
+.stat-box {
+    background: rgba(0, 0, 0, 0.8);  /* 🔥 darker for contrast */
+    padding: 8px;
+    border-radius: 8px;
+    width: 30%;
+    color: #ffffff;                 /* 🔥 white text */
+    border: 1px solid #00ffae55;    /* subtle neon border */
+    box-shadow: 0 0 10px rgba(0,255,150,0.3); /* glow */
+}
 
     /* INPUT */
     .stTextInput input {
