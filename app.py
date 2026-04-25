@@ -28,7 +28,6 @@ if "session_id" not in st.session_state:
 # ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
-# ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
 if not st.session_state.logged_in:
@@ -36,37 +35,59 @@ if not st.session_state.logged_in:
     st.markdown("""
     <style>
     .stApp {
-        background: radial-gradient(circle at top, #0f2027, #000000);
+        background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/ChatGPT%20Image%20Apr%2025%2C%202026%2C%2011_23_06%20AM.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
     }
 
-    .main-container {
+    /* Dark overlay for readability */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        z-index: -1;
+    }
+
+    /* Center container */
+    .center-box {
         display: flex;
         justify-content: center;
         align-items: center;
         height: 90vh;
-        gap: 60px;
     }
 
-    .login-box {
-        background: rgba(0, 0, 0, 0.7);
+    /* Login card */
+    .login-card {
+        background: rgba(0, 0, 0, 0.75);
         padding: 40px;
         border-radius: 20px;
         backdrop-filter: blur(15px);
-        box-shadow: 0 0 40px rgba(0,255,150,0.2);
+        box-shadow: 0 0 40px rgba(0,255,150,0.3);
         width: 400px;
+        text-align: center;
     }
 
     .title {
         font-size: 28px;
         font-weight: bold;
         color: #00ffae;
-        text-align: center;
+        margin-bottom: 10px;
     }
 
     .subtitle {
-        text-align: center;
-        color: #aaa;
-        margin-bottom: 20px;
+        color: #ccc;
+        margin-bottom: 25px;
+    }
+
+    .stTextInput>div>div>input {
+        background-color: #111;
+        color: white;
+        border-radius: 10px;
     }
 
     .stButton>button {
@@ -77,63 +98,60 @@ if not st.session_state.logged_in:
         border-radius: 10px;
         height: 45px;
     }
+
+    .stButton>button:hover {
+        transform: scale(1.05);
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    # 🔥 COLUMNS FOR PERFECT ALIGNMENT
-    col1, col2 = st.columns([1,1])
+    st.markdown("<div class='center-box'>", unsafe_allow_html=True)
+    st.markdown("<div class='login-card'>", unsafe_allow_html=True)
 
-    # LEFT → IMAGE
-    with col1:
-        st.image("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/ChatGPT%20Image%20Apr%2025%2C%202026%2C%2011_23_06%20AM.png")
+    st.markdown("<div class='title'>WELCOME BACK</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>Login to your account</div>", unsafe_allow_html=True)
 
-    # RIGHT → LOGIN
-    with col2:
-        st.markdown("<div class='login-box'>", unsafe_allow_html=True)
+    username = st.text_input("Username").strip().lower()
+    password = st.text_input("Password", type="password")
 
-        st.markdown("<div class='title'>ODD FATHERS</div>", unsafe_allow_html=True)
-        st.markdown("<div class='subtitle'>AI Football Engine</div>", unsafe_allow_html=True)
+    if st.button("LOGIN"):
 
-        username = st.text_input("Username").strip().lower()
-        password = st.text_input("Password", type="password")
+        res = supabase.table("users").select("*").eq("username", username).execute()
 
-        if st.button("🚀 LOGIN"):
+        if not res.data:
+            st.error("User not found")
+            st.stop()
 
-            res = supabase.table("users").select("*").eq("username", username).execute()
+        user = res.data[0]
 
-            if not res.data:
-                st.error("User not found")
-                st.stop()
+        if user["banned"]:
+            st.error("Account banned")
 
-            user = res.data[0]
+        elif user["password"] != password:
+            st.error("Wrong password")
 
-            if user["banned"]:
-                st.error("Account banned")
+        elif not user["expires_at"]:
+            st.error("No subscription")
 
-            elif user["password"] != password:
-                st.error("Wrong password")
+        elif datetime.fromisoformat(user["expires_at"]) < datetime.utcnow():
+            st.error("Subscription expired")
 
-            elif not user["expires_at"]:
-                st.error("No subscription")
+        else:
+            session_id = str(uuid.uuid4())
 
-            elif datetime.fromisoformat(user["expires_at"]) < datetime.utcnow():
-                st.error("Subscription expired")
+            supabase.table("users").update({
+                "session_id": session_id,
+                "last_login": "now()"
+            }).eq("username", username).execute()
 
-            else:
-                session_id = str(uuid.uuid4())
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.session_state.session_id = session_id
 
-                supabase.table("users").update({
-                    "session_id": session_id,
-                    "last_login": "now()"
-                }).eq("username", username).execute()
+            st.rerun()
 
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.session_state.session_id = session_id
-
-                st.rerun()
-
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
 # ----------------------------
