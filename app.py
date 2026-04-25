@@ -41,7 +41,7 @@ if not st.session_state.logged_in:
     /* 🔥 BACKGROUND (TRANSPARENT LOGO FIXED) */
     .stApp {
         background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089-removebg-preview.png");
-        background-size: 40%;
+        background-size: 30%;
         background-position: center;
         background-repeat: no-repeat;
         background-color: black;
