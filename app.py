@@ -35,54 +35,52 @@ if not st.session_state.logged_in:
     st.markdown("""
     <style>
 
-    /* REMOVE STREAMLIT SPACING */
     .block-container {padding:0 !important;}
     header, footer {visibility:hidden;}
 
-    /* BACKGROUND (NO WEIRD ZOOM) */
+    /* 🔥 BACKGROUND (ZOOMED OUT A BIT) */
     .stApp {
         background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg");
-        background-size: cover;
+        background-size: 85%;   /* 👈 adjust here (80–90 is perfect) */
         background-position: center;
         background-repeat: no-repeat;
+        background-color: black;
     }
 
-    /* DARK + BLUR OVERLAY (THIS FIXES EVERYTHING) */
+    /* 🔥 CENTER EVERYTHING */
     .overlay {
         position: fixed;
         inset: 0;
-        backdrop-filter: blur(6px);
-        background: rgba(0,0,0,0.65);
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
-    /* CLEAN CENTER CARD */
+    /* 🔥 BLACK BOX (LOGIN CARD) */
     .card {
-        width: 320px;
-        padding: 30px;
+        width: 340px;
+        padding: 35px;
         border-radius: 16px;
         background: rgba(0,0,0,0.85);
         box-shadow: 0 0 25px rgba(0,255,150,0.25);
         text-align: center;
     }
 
-    /* TITLE */
+    /* 🔥 TEXT INSIDE BOX */
     .title {
-        font-size: 24px;
+        font-size: 26px;
         font-weight: bold;
         color: #00ffae;
         margin-bottom: 5px;
     }
 
     .subtitle {
-        font-size: 12px;
+        font-size: 13px;
         color: #aaa;
         margin-bottom: 18px;
     }
 
-    /* INPUT FIX */
+    /* INPUT */
     .stTextInput input {
         background: #111 !important;
         color: white !important;
@@ -108,8 +106,9 @@ if not st.session_state.logged_in:
     st.markdown("<div class='overlay'>", unsafe_allow_html=True)
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
+    # 🔥 YOUR TEXT IN BLACK BOX
     st.markdown("<div class='title'>ODDFATHERS</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>AI betting engine • no guessing • just results</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>Your AI system is ready — let it do the work for you.</div>", unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
@@ -157,7 +156,6 @@ if not st.session_state.logged_in:
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
-  
     
 
     
