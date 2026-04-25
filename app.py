@@ -32,22 +32,46 @@ if "session_id" not in st.session_state:
 # ----------------------------
 if not st.session_state.logged_in:
 
-    # 🔥 ULTRA PREMIUM UI STYLE
     st.markdown("""
     <style>
-    .stApp {
-        background: radial-gradient(circle at top, #0f2027, #000000);
+    /* REMOVE DEFAULT PADDING */
+    .block-container {
+        padding: 0 !important;
     }
 
-    .login-container {
-        background: rgba(0, 0, 0, 0.65);
+    header, footer {
+        visibility: hidden;
+    }
+
+    /* FULLSCREEN BACKGROUND IMAGE */
+    .stApp {
+        background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    /* DARK OVERLAY */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* LOGIN CARD */
+    .login-box {
+        background: rgba(0, 0, 0, 0.85);
         padding: 40px;
         border-radius: 20px;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 0 40px rgba(0,255,150,0.25);
-        max-width: 420px;
-        margin: auto;
-        margin-top: 40px;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 0 40px rgba(0,255,150,0.3);
+        width: 380px;
         text-align: center;
         animation: fadeIn 1s ease-in-out;
     }
@@ -58,10 +82,13 @@ if not st.session_state.logged_in:
     }
 
     .title {
-        font-size: 30px;
+        font-size: 28px;
         font-weight: bold;
+        color: white;
+    }
+
+    .highlight {
         color: #00ffae;
-        margin-bottom: 5px;
     }
 
     .subtitle {
@@ -70,50 +97,25 @@ if not st.session_state.logged_in:
         font-size: 14px;
     }
 
-    .stats {
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 20px;
-        color: #00ffae;
-        font-size: 13px;
-    }
-
-    .stat-box {
-        background: rgba(255,255,255,0.05);
-        padding: 8px;
-        border-radius: 10px;
-    }
-
-    .stTextInput>div>div>input {
-        background-color: #111;
-        color: white;
+    .stTextInput input {
+        background-color: #111 !important;
+        color: white !important;
         border-radius: 10px;
         border: 1px solid #00ffae33;
     }
 
     .stButton>button {
+        width: 100%;
         background: linear-gradient(90deg, #00ffae, #00c3ff);
         color: black;
         font-weight: bold;
         border-radius: 10px;
         height: 45px;
-        width: 100%;
         box-shadow: 0 0 15px rgba(0,255,150,0.5);
     }
 
     .stButton>button:hover {
-        transform: scale(1.06);
-        transition: 0.2s;
-    }
-
-    .badge {
-        background: linear-gradient(90deg,#00ffae,#00c3ff);
-        color: black;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        display: inline-block;
-        margin-bottom: 15px;
+        transform: scale(1.05);
     }
 
     .footer-text {
@@ -124,35 +126,19 @@ if not st.session_state.logged_in:
     </style>
     """, unsafe_allow_html=True)
 
-    # 🔥 LOGO (FIXED ✅)
-    st.image(
-        "https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg",
-        width=160
-    )
+    st.markdown("<div class='overlay'>", unsafe_allow_html=True)
+    st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
-    # 🔥 LOGIN CARD
-    st.markdown("<div class='login-container'>", unsafe_allow_html=True)
-
-    st.markdown("<div class='badge'>🔥 LIVE AI SYSTEM</div>", unsafe_allow_html=True)
-
-    st.markdown("<div class='title'>ODD FATHERS</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>AI Football Engine • No Guessing • Just Results</div>", unsafe_allow_html=True)
-
-    # 🔥 FAKE LIVE STATS
-    st.markdown("""
-    <div class="stats">
-        <div class="stat-box">🔥 87% Win Rate</div>
-        <div class="stat-box">📈 +245% Profit</div>
-        <div class="stat-box">👥 45+ Users</div>
-    </div>
-    """, unsafe_allow_html=True)
+    # 🔥 TEXT (you said “write something”)
+    st.markdown("<div class='title'>WELCOME <span class='highlight'>BACK</span></div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>Your AI is already analyzing today's matches… don't stay behind.</div>", unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
 
-    if st.button("🚀 ACCESS AI SYSTEM"):
+    if st.button("🚀 ENTER THE SYSTEM"):
 
-        with st.spinner("Analyzing account..."):
+        with st.spinner("Connecting to AI engine..."):
             time.sleep(1.5)
 
         res = supabase.table("users").select("*").eq("username", username).execute()
@@ -192,8 +178,9 @@ if not st.session_state.logged_in:
 
             st.rerun()
 
-    st.markdown("<div class='footer-text'>⚡ AI is scanning today's matches in real-time</div>", unsafe_allow_html=True)
+    st.markdown("<div class='footer-text'>⚡ Live AI • Real-time analysis • No guessing</div>", unsafe_allow_html=True)
 
+    st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
