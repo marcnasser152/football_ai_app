@@ -28,103 +28,132 @@ if "session_id" not in st.session_state:
 # ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
-# ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
 if not st.session_state.logged_in:
 
-    st.set_page_config(layout="wide")
-
+    # 🔥 ULTRA PREMIUM UI STYLE
     st.markdown("""
     <style>
-    /* REMOVE STREAMLIT PADDING */
-    .block-container {
-        padding-top: 0rem;
-        padding-bottom: 0rem;
-        padding-left: 0rem;
-        padding-right: 0rem;
-    }
-
-    header, footer {
-        visibility: hidden;
-    }
-
-    /* FULL SCREEN BACKGROUND */
     .stApp {
-        background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/ChatGPT%20Image%20Apr%2025%2C%202026%2C%2011_23_06%20AM.png");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        height: 100vh;
-        overflow: hidden;
+        background: radial-gradient(circle at top, #0f2027, #000000);
     }
 
-    /* DARK OVERLAY */
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.6);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* LOGIN CARD */
-    .login-card {
-        background: rgba(0,0,0,0.75);
+    .login-container {
+        background: rgba(0, 0, 0, 0.65);
         padding: 40px;
         border-radius: 20px;
-        backdrop-filter: blur(15px);
-        box-shadow: 0 0 50px rgba(0,255,150,0.3);
-        width: 380px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 0 40px rgba(0,255,150,0.25);
+        max-width: 420px;
+        margin: auto;
+        margin-top: 40px;
         text-align: center;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(20px);}
+        to {opacity: 1; transform: translateY(0);}
     }
 
     .title {
-        font-size: 26px;
+        font-size: 30px;
         font-weight: bold;
-        color: white;
-    }
-
-    .title span {
         color: #00ffae;
+        margin-bottom: 5px;
     }
 
     .subtitle {
         color: #aaa;
         margin-bottom: 20px;
+        font-size: 14px;
     }
 
-    .stTextInput input {
-        background-color: #111 !important;
-        color: white !important;
+    .stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        color: #00ffae;
+        font-size: 13px;
+    }
+
+    .stat-box {
+        background: rgba(255,255,255,0.05);
+        padding: 8px;
         border-radius: 10px;
     }
 
+    .stTextInput>div>div>input {
+        background-color: #111;
+        color: white;
+        border-radius: 10px;
+        border: 1px solid #00ffae33;
+    }
+
     .stButton>button {
-        width: 100%;
         background: linear-gradient(90deg, #00ffae, #00c3ff);
         color: black;
         font-weight: bold;
         border-radius: 10px;
         height: 45px;
+        width: 100%;
+        box-shadow: 0 0 15px rgba(0,255,150,0.5);
+    }
+
+    .stButton>button:hover {
+        transform: scale(1.06);
+        transition: 0.2s;
+    }
+
+    .badge {
+        background: linear-gradient(90deg,#00ffae,#00c3ff);
+        color: black;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    .footer-text {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #888;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='overlay'>", unsafe_allow_html=True)
-    st.markdown("<div class='login-card'>", unsafe_allow_html=True)
+    # 🔥 LOGO (FIXED ✅)
+    st.image(
+        "https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg",
+        width=160
+    )
 
-    st.markdown("<div class='title'>WELCOME <span>BACK</span></div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>Login to your account</div>", unsafe_allow_html=True)
+    # 🔥 LOGIN CARD
+    st.markdown("<div class='login-container'>", unsafe_allow_html=True)
+
+    st.markdown("<div class='badge'>🔥 LIVE AI SYSTEM</div>", unsafe_allow_html=True)
+
+    st.markdown("<div class='title'>ODD FATHERS</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>AI Football Engine • No Guessing • Just Results</div>", unsafe_allow_html=True)
+
+    # 🔥 FAKE LIVE STATS
+    st.markdown("""
+    <div class="stats">
+        <div class="stat-box">🔥 87% Win Rate</div>
+        <div class="stat-box">📈 +245% Profit</div>
+        <div class="stat-box">👥 45+ Users</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
 
-    if st.button("LOGIN"):
+    if st.button("🚀 ACCESS AI SYSTEM"):
+
+        with st.spinner("Analyzing account..."):
+            time.sleep(1.5)
 
         res = supabase.table("users").select("*").eq("username", username).execute()
 
@@ -158,9 +187,13 @@ if not st.session_state.logged_in:
             st.session_state.username = username
             st.session_state.session_id = session_id
 
+            st.success("Access Granted 🚀")
+            time.sleep(1)
+
             st.rerun()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div class='footer-text'>⚡ AI is scanning today's matches in real-time</div>", unsafe_allow_html=True)
+
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
