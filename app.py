@@ -28,6 +28,7 @@ if "session_id" not in st.session_state:
 # ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
+# ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
 if not st.session_state.logged_in:
@@ -35,7 +36,6 @@ if not st.session_state.logged_in:
     st.markdown("""
     <style>
 
-    /* REMOVE STREAMLIT DEFAULT SPACING */
     .block-container {
         padding: 0 !important;
     }
@@ -44,31 +44,35 @@ if not st.session_state.logged_in:
         visibility: hidden;
     }
 
-    /* BACKGROUND IMAGE (ZOOMED OUT FIX) */
+    /* BACKGROUND FIX */
     .stApp {
         background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg");
-        background-size: contain;  /* 🔥 THIS FIXES ZOOM */
+        background-size: cover;   /* 🔥 FILL SCREEN */
         background-position: center;
         background-repeat: no-repeat;
-        background-color: black; /* fills sides cleanly */
     }
 
-    /* CENTER EVERYTHING */
-    .main-container {
+    /* DARK + BLUR OVERLAY (HIDES WHITE EDGES) */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(8px);
+        background: rgba(0,0,0,0.7);
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
     }
 
     /* LOGIN CARD */
     .login-box {
-        background: rgba(0, 0, 0, 0.75);
+        background: rgba(0, 0, 0, 0.85);
         padding: 40px;
         border-radius: 20px;
-        backdrop-filter: blur(15px);
         box-shadow: 0 0 40px rgba(0,255,150,0.3);
-        width: 380px;
+        width: 360px;
         text-align: center;
     }
 
@@ -88,16 +92,13 @@ if not st.session_state.logged_in:
         font-size: 14px;
     }
 
-    /* INPUT FIX (removes big black bars) */
-    .stTextInput>div>div>input {
+    .stTextInput input {
         background-color: #111 !important;
         color: white !important;
-        border-radius: 10px !important;
-        border: 1px solid #00ffae33 !important;
-        height: 45px;
+        border-radius: 10px;
+        border: 1px solid #00ffae33;
     }
 
-    /* BUTTON */
     .stButton>button {
         width: 100%;
         background: linear-gradient(90deg, #00ffae, #00c3ff);
@@ -105,22 +106,16 @@ if not st.session_state.logged_in:
         font-weight: bold;
         border-radius: 10px;
         height: 45px;
-        margin-top: 10px;
-    }
-
-    .stButton>button:hover {
-        transform: scale(1.05);
     }
 
     </style>
     """, unsafe_allow_html=True)
 
-    # CENTER CONTAINER
-    st.markdown("<div class='main-container'>", unsafe_allow_html=True)
+    st.markdown("<div class='overlay'>", unsafe_allow_html=True)
     st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
     st.markdown("<div class='title'>WELCOME <span class='highlight'>BACK</span></div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>Your AI is already analyzing today's matches…</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>Your AI is already analyzing today's matches</div>", unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
@@ -162,8 +157,6 @@ if not st.session_state.logged_in:
             st.session_state.username = username
             st.session_state.session_id = session_id
 
-            st.success("Access Granted 🚀")
-            time.sleep(1)
             st.rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
