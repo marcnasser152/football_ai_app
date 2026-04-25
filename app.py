@@ -44,29 +44,28 @@ if not st.session_state.logged_in:
         visibility: hidden;
     }
 
-    /* BACKGROUND FIX */
+    /* 🔥 BACKGROUND (LESS ZOOMED) */
     .stApp {
         background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg");
-        background-size: cover;   /* 🔥 FILL SCREEN */
+        background-size: 70%;  /* 🔥 CONTROL ZOOM HERE */
         background-position: center;
         background-repeat: no-repeat;
+        background-color: black;
     }
 
-    /* DARK + BLUR OVERLAY (HIDES WHITE EDGES) */
+    /* 🔥 CENTER */
     .overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        backdrop-filter: blur(8px);
-        background: rgba(0,0,0,0.7);
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
-    /* LOGIN CARD */
+    /* 🔥 LOGIN CARD */
     .login-box {
         background: rgba(0, 0, 0, 0.85);
         padding: 40px;
@@ -76,14 +75,13 @@ if not st.session_state.logged_in:
         text-align: center;
     }
 
-    .title {
-        font-size: 28px;
+    /* 🔥 BIG TITLE (YOUR REQUEST) */
+    .main-title {
+        font-size: 32px;
         font-weight: bold;
-        color: white;
-    }
-
-    .highlight {
         color: #00ffae;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
     }
 
     .subtitle {
@@ -114,8 +112,9 @@ if not st.session_state.logged_in:
     st.markdown("<div class='overlay'>", unsafe_allow_html=True)
     st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
-    st.markdown("<div class='title'>WELCOME <span class='highlight'>BACK</span></div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>Your AI is already analyzing today's matches</div>", unsafe_allow_html=True)
+    # 🔥 YOUR TEXT
+    st.markdown("<div class='main-title'>ODDFATHERS</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>AI football engine • No guessing • Just results</div>", unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
