@@ -28,7 +28,6 @@ if "session_id" not in st.session_state:
 # ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
-# ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
 if not st.session_state.logged_in:
@@ -36,6 +35,7 @@ if not st.session_state.logged_in:
     st.markdown("""
     <style>
 
+    /* REMOVE DEFAULT SPACING */
     .block-container {
         padding: 0 !important;
     }
@@ -44,77 +44,79 @@ if not st.session_state.logged_in:
         visibility: hidden;
     }
 
-    /* 🔥 BACKGROUND (LESS ZOOMED) */
+    /* BACKGROUND */
     .stApp {
         background-image: url("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/6008058875560530089.jpg");
-        background-size: 70%;  /* 🔥 CONTROL ZOOM HERE */
+        background-size: 60%;
         background-position: center;
         background-repeat: no-repeat;
         background-color: black;
     }
 
-    /* 🔥 CENTER */
-    .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+    /* CENTER EVERYTHING */
+    .wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
+        height: 100vh;
     }
 
-    /* 🔥 LOGIN CARD */
-    .login-box {
-        background: rgba(0, 0, 0, 0.85);
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 0 40px rgba(0,255,150,0.3);
-        width: 360px;
+    /* LOGIN CARD */
+    .card {
+        background: rgba(0,0,0,0.85);
+        padding: 35px;
+        border-radius: 18px;
+        width: 340px;
         text-align: center;
+        box-shadow: 0 0 30px rgba(0,255,150,0.3);
     }
 
-    /* 🔥 BIG TITLE (YOUR REQUEST) */
-    .main-title {
-        font-size: 32px;
+    /* TITLE */
+    .title {
+        font-size: 26px;
         font-weight: bold;
         color: #00ffae;
-        margin-bottom: 10px;
-        letter-spacing: 2px;
+        margin-bottom: 8px;
     }
 
     .subtitle {
+        font-size: 13px;
         color: #aaa;
         margin-bottom: 20px;
-        font-size: 14px;
     }
 
-    .stTextInput input {
-        background-color: #111 !important;
+    /* FIX INPUT WIDTH (IMPORTANT) */
+    .stTextInput {
+        width: 100% !important;
+    }
+
+    .stTextInput>div>div>input {
+        background: #111 !important;
         color: white !important;
-        border-radius: 10px;
-        border: 1px solid #00ffae33;
+        border-radius: 8px !important;
+        border: 1px solid #00ffae33 !important;
+        height: 42px;
     }
 
+    /* BUTTON */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(90deg, #00ffae, #00c3ff);
+        background: linear-gradient(90deg,#00ffae,#00c3ff);
         color: black;
         font-weight: bold;
-        border-radius: 10px;
-        height: 45px;
+        border-radius: 8px;
+        height: 42px;
+        margin-top: 10px;
     }
 
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='overlay'>", unsafe_allow_html=True)
-    st.markdown("<div class='login-box'>", unsafe_allow_html=True)
+    st.markdown("<div class='wrapper'>", unsafe_allow_html=True)
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-    # 🔥 YOUR TEXT
-    st.markdown("<div class='main-title'>ODDFATHERS</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>AI football engine • No guessing • Just results</div>", unsafe_allow_html=True)
+    st.markdown("<div class='title'>ODDFATHERS</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>AI engine • no guessing • just results</div>", unsafe_allow_html=True)
 
     username = st.text_input("Username").strip().lower()
     password = st.text_input("Password", type="password")
@@ -162,6 +164,11 @@ if not st.session_state.logged_in:
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
+
+  
+    
+
+    
 # ----------------------------
 # FETCH USER
 # ----------------------------
