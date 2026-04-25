@@ -28,168 +28,112 @@ if "session_id" not in st.session_state:
 # ----------------------------
 # LOGIN SYSTEM
 # ----------------------------
+# ----------------------------
+# LOGIN SYSTEM
+# ----------------------------
 if not st.session_state.logged_in:
 
-    # 🔥 ULTRA PREMIUM UI STYLE
     st.markdown("""
     <style>
     .stApp {
         background: radial-gradient(circle at top, #0f2027, #000000);
     }
 
-    .login-container {
-        background: rgba(0, 0, 0, 0.65);
-        padding: 40px;
-        border-radius: 20px;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 0 40px rgba(0,255,150,0.25);
-        max-width: 420px;
-        margin: auto;
-        margin-top: 40px;
-        text-align: center;
-        animation: fadeIn 1s ease-in-out;
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 90vh;
+        gap: 60px;
     }
 
-    @keyframes fadeIn {
-        from {opacity: 0; transform: translateY(20px);}
-        to {opacity: 1; transform: translateY(0);}
+    .login-box {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 40px;
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 0 40px rgba(0,255,150,0.2);
+        width: 400px;
     }
 
     .title {
-        font-size: 30px;
+        font-size: 28px;
         font-weight: bold;
         color: #00ffae;
-        margin-bottom: 5px;
+        text-align: center;
     }
 
     .subtitle {
+        text-align: center;
         color: #aaa;
         margin-bottom: 20px;
-        font-size: 14px;
-    }
-
-    .stats {
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 20px;
-        color: #00ffae;
-        font-size: 13px;
-    }
-
-    .stat-box {
-        background: rgba(255,255,255,0.05);
-        padding: 8px;
-        border-radius: 10px;
-    }
-
-    .stTextInput>div>div>input {
-        background-color: #111;
-        color: white;
-        border-radius: 10px;
-        border: 1px solid #00ffae33;
     }
 
     .stButton>button {
+        width: 100%;
         background: linear-gradient(90deg, #00ffae, #00c3ff);
         color: black;
         font-weight: bold;
         border-radius: 10px;
         height: 45px;
-        width: 100%;
-        box-shadow: 0 0 15px rgba(0,255,150,0.5);
-    }
-
-    .stButton>button:hover {
-        transform: scale(1.06);
-        transition: 0.2s;
-    }
-
-    .badge {
-        background: linear-gradient(90deg,#00ffae,#00c3ff);
-        color: black;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        display: inline-block;
-        margin-bottom: 15px;
-    }
-
-    .footer-text {
-        margin-top: 15px;
-        font-size: 12px;
-        color: #888;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # 🔥 LOGO
-    st.image("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/ChatGPT%20Image%20Apr%2025%2C%202026%2C%2011_23_06%20AM.png", width=160)
+    # 🔥 COLUMNS FOR PERFECT ALIGNMENT
+    col1, col2 = st.columns([1,1])
 
-    # 🔥 LOGIN CARD
-    st.markdown("<div class='login-container'>", unsafe_allow_html=True)
+    # LEFT → IMAGE
+    with col1:
+        st.image("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/ChatGPT%20Image%20Apr%2025%2C%202026%2C%2011_23_06%20AM.png")
 
-    st.markdown("<div class='badge'>🔥 LIVE AI SYSTEM</div>", unsafe_allow_html=True)
+    # RIGHT → LOGIN
+    with col2:
+        st.markdown("<div class='login-box'>", unsafe_allow_html=True)
 
-    st.markdown("<div class='title'>ODD FATHERS</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>AI Football Engine • No Guessing • Just Results</div>", unsafe_allow_html=True)
+        st.markdown("<div class='title'>ODD FATHERS</div>", unsafe_allow_html=True)
+        st.markdown("<div class='subtitle'>AI Football Engine</div>", unsafe_allow_html=True)
 
-    # 🔥 FAKE LIVE STATS (conversion psychology)
-    st.markdown("""
-    <div class="stats">
-        <div class="stat-box">🔥 87% Win Rate</div>
-        <div class="stat-box">📈 +245% Profit</div>
-        <div class="stat-box">👥 45+ Users</div>
-    </div>
-    """, unsafe_allow_html=True)
+        username = st.text_input("Username").strip().lower()
+        password = st.text_input("Password", type="password")
 
-    username = st.text_input("Username").strip().lower()
-    password = st.text_input("Password", type="password")
+        if st.button("🚀 LOGIN"):
 
-    if st.button("🚀 ACCESS AI SYSTEM"):
+            res = supabase.table("users").select("*").eq("username", username).execute()
 
-        with st.spinner("Analyzing account..."):
-            time.sleep(1.5)
+            if not res.data:
+                st.error("User not found")
+                st.stop()
 
-        res = supabase.table("users").select("*").eq("username", username).execute()
+            user = res.data[0]
 
-        if not res.data:
-            st.error("User not found")
-            st.stop()
+            if user["banned"]:
+                st.error("Account banned")
 
-        user = res.data[0]
+            elif user["password"] != password:
+                st.error("Wrong password")
 
-        if user["banned"]:
-            st.error("Account banned")
+            elif not user["expires_at"]:
+                st.error("No subscription")
 
-        elif user["password"] != password:
-            st.error("Wrong password")
+            elif datetime.fromisoformat(user["expires_at"]) < datetime.utcnow():
+                st.error("Subscription expired")
 
-        elif not user["expires_at"]:
-            st.error("No subscription")
+            else:
+                session_id = str(uuid.uuid4())
 
-        elif datetime.fromisoformat(user["expires_at"]) < datetime.utcnow():
-            st.error("Subscription expired")
+                supabase.table("users").update({
+                    "session_id": session_id,
+                    "last_login": "now()"
+                }).eq("username", username).execute()
 
-        else:
-            session_id = str(uuid.uuid4())
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.session_state.session_id = session_id
 
-            supabase.table("users").update({
-                "session_id": session_id,
-                "last_login": "now()"
-            }).eq("username", username).execute()
+                st.rerun()
 
-            st.session_state.logged_in = True
-            st.session_state.username = username
-            st.session_state.session_id = session_id
-
-            st.success("Access Granted 🚀")
-            time.sleep(1)
-
-            st.rerun()
-
-    st.markdown("<div class='footer-text'>⚡ AI is scanning today's matches in real-time</div>", unsafe_allow_html=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.stop()
 # ----------------------------
