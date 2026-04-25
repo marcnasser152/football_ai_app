@@ -123,7 +123,7 @@ if not st.session_state.logged_in:
     """, unsafe_allow_html=True)
 
     # 🔥 LOGO
-    st.image("/mnt/data/6008058875560530089.jpg", width=160)
+    st.image("https://raw.githubusercontent.com/marcnasser152/football_ai_app/main/ChatGPT%20Image%20Apr%2025%2C%202026%2C%2011_23_06%20AM.png", width=160)
 
     # 🔥 LOGIN CARD
     st.markdown("<div class='login-container'>", unsafe_allow_html=True)
