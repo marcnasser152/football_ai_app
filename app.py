@@ -255,26 +255,10 @@ if not st.session_state.accepted_terms:
 # ----------------------------
 # MATCHES
 matches = [
-    {"league":"Spain LaLiga","home":"Rayo Vallecano","away":"Real Sociedad"},
-    {"league":"Spain LaLiga","home":"Real Oviedo","away":"Elche"},
-    {"league":"Spain LaLiga","home":"Osasuna","away":"Sevilla"},
-    {"league":"Spain LaLiga","home":"Villarreal","away":"Celta Vigo"},
-
-    {"league":"Italy Serie A","home":"Fiorentina","away":"Sassuolo"},
-    {"league":"Italy Serie A","home":"Genoa","away":"Como"},
-    {"league":"Italy Serie A","home":"Torino","away":"Inter"},
-    {"league":"Italy Serie A","home":"Milan","away":"Juventus"},
-
-    {"league":"Germany Bundesliga","home":"VfB Stuttgart","away":"Werder Bremen"},
-    {"league":"Germany Bundesliga","home":"Dortmund","away":"Freiburg"},
-
-    {"league":"France Ligue 1","home":"Lorient","away":"Strasbourg"},
-    {"league":"France Ligue 1","home":"Le Havre","away":"Metz"},
-    {"league":"France Ligue 1","home":"Paris FC","away":"Lille"},
-    {"league":"France Ligue 1","home":"Rennes","away":"Nantes"},
-    {"league":"France Ligue 1","home":"Marseille","away":"Nice"},
-
-    {"league":"England FA Cup","home":"Chelsea","away":"Leeds"},
+    {"league":"England Premier League","home":"Man United","away":"Brentford"},
+    {"league":"Spain LaLiga","home":"Espanyol","away":"Levante"},
+    {"league":"Italy Serie A","home":"Cagliari","away":"Atalanta"},
+    {"league":"Italy Serie A","home":"Lazio","away":"Udinese"},
 ]
 options = [f"{m['league']} | {m['home']} vs {m['away']}" for m in matches]
 selected = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
