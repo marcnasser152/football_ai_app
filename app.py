@@ -251,39 +251,35 @@ if not st.session_state.accepted_terms:
 
 # ----------------------------
 # MATCHES
-# ----------------------------
-# ----------------------------
-# MATCHES
 matches = [
     # England Premier League
-    {"league":"England Premier League","home":"Brentford","away":"West Ham"},
-    {"league":"England Premier League","home":"Newcastle","away":"Brighton"},
-    {"league":"England Premier League","home":"Wolves","away":"Sunderland"},
-    {"league":"England Premier League","home":"Arsenal","away":"Fulham"},
+    {"league":"England Premier League","home":"Bournemouth","away":"Crystal Palace"},
+    {"league":"England Premier League","home":"Man United","away":"Liverpool"},
+    {"league":"England Premier League","home":"Aston Villa","away":"Tottenham"},
 
     # Spain LaLiga
-    {"league":"Spain LaLiga","home":"Villarreal","away":"Levante"},
-    {"league":"Spain LaLiga","home":"Valencia","away":"Atletico Madrid"},
-    {"league":"Spain LaLiga","home":"Deportivo Alaves","away":"Athletic Club"},
-    {"league":"Spain LaLiga","home":"Osasuna","away":"Barcelona"},
+    {"league":"Spain LaLiga","home":"Celta Vigo","away":"Elche"},
+    {"league":"Spain LaLiga","home":"Getafe","away":"Rayo Vallecano"},
+    {"league":"Spain LaLiga","home":"Real Betis","away":"Real Oviedo"},
+    {"league":"Spain LaLiga","home":"Espanyol","away":"Real Madrid"},
 
     # Italy Serie A
-    {"league":"Italy Serie A","home":"Udinese","away":"Torino"},
-    {"league":"Italy Serie A","home":"Como","away":"Napoli"},
-    {"league":"Italy Serie A","home":"Atalanta","away":"Genoa"},
+    {"league":"Italy Serie A","home":"Bologna","away":"Cagliari"},
+    {"league":"Italy Serie A","home":"Sassuolo","away":"Milan"},
+    {"league":"Italy Serie A","home":"Juventus","away":"Hellas Verona"},
+    {"league":"Italy Serie A","home":"Inter Milan","away":"Parma"},
 
     # Germany Bundesliga
-    {"league":"Germany Bundesliga","home":"Bayern","away":"FC Heidenheim"},
-    {"league":"Germany Bundesliga","home":"Frankfurt","away":"Hamburger"},
-    {"league":"Germany Bundesliga","home":"Hoffenheim","away":"Stuttgart"},
-    {"league":"Germany Bundesliga","home":"Union Berlin","away":"Koln"},
-    {"league":"Germany Bundesliga","home":"Werder Bremen","away":"Augsburg"},
-    {"league":"Germany Bundesliga","home":"Leverkusen","away":"Leipzig"},
+    {"league":"Germany Bundesliga","home":"St. Pauli","away":"Mainz"},
+    {"league":"Germany Bundesliga","home":"M'Gladbach","away":"Dortmund"},
+    {"league":"Germany Bundesliga","home":"Freiburg","away":"Wolfsburg"},
 
     # France Ligue 1
-    {"league":"France Ligue 1","home":"PSG","away":"Lorient"},
-    {"league":"France Ligue 1","home":"Nice","away":"Lens"},
-    {"league":"France Ligue 1","home":"Metz","away":"Monaco"},
+    {"league":"France Ligue 1","home":"Lille","away":"Le Havre"},
+    {"league":"France Ligue 1","home":"Auxerre","away":"Angers"},
+    {"league":"France Ligue 1","home":"Paris FC","away":"Brest"},
+    {"league":"France Ligue 1","home":"Strasbourg","away":"Toulouse"},
+    {"league":"France Ligue 1","home":"Lyon","away":"Rennes"},
 ]
 options = [f"{m['league']} | {m['home']} vs {m['away']}" for m in matches]
 selected = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
