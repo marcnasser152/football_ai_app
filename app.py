@@ -252,14 +252,12 @@ if not st.session_state.accepted_terms:
 # ----------------------------
 # MATCHES
 matches = [
-    # England Premier League
-    {"league":"England Premier League","home":"Chelsea","away":"Nottm Forest"},
-    {"league":"England Premier League","home":"Everton","away":"Man City"},
-    # Spain LaLiga
-    {"league":"Spain LaLiga","home":"Sevilla","away":"Real Sociedad"},
-    # Italy Serie A
-    {"league":"Italy Serie A","home":"Cremonese","away":"Lazio"},
-    {"league":"Italy Serie A","home":"Roma","away":"Fiorentina"},
+    # Europa League Semi Final
+    {"league":"Europa League Semi Final","home":"Aston Villa","away":"Nottm Forest"},
+    {"league":"Europa League Semi Final","home":"Freiburg","away":"Braga"},
+    # Conference League
+    {"league":"Conference League","home":"Crystal Palace","away":"Shakhtar Donetsk"},
+    {"league":"Conference League","home":"Strasbourg","away":"Rayo Vallecano"},
 ]
 options = [f"{m['league']} | {m['home']} vs {m['away']}" for m in matches]
 selected = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
