@@ -252,20 +252,30 @@ if not st.session_state.accepted_terms:
 # ----------------------------
 # MATCHES
 matches = [
-    # England Championship
-    {"league":"England Championship","home":"Hull","away":"Millwall"},
+    # England Premier League
+    {"league":"England Premier League","home":"Liverpool","away":"Chelsea"},
+    {"league":"England Premier League","home":"Brighton","away":"Wolves"},
+    {"league":"England Premier League","home":"Fulham","away":"Bournemouth"},
+    {"league":"England Premier League","home":"Sunderland","away":"United"},
+    {"league":"England Premier League","home":"Man City","away":"Brentford"},
 
     # Spain LaLiga
-    {"league":"Spain LaLiga","home":"Levante","away":"Osasuna"},
+    {"league":"Spain LaLiga","home":"Elche","away":"Deportivo Alaves"},
+    {"league":"Spain LaLiga","home":"Sevilla","away":"Espanyol"},
+    {"league":"Spain LaLiga","home":"Atletico Madrid","away":"Celta Vigo"},
+    {"league":"Spain LaLiga","home":"Real Sociedad","away":"Real Betis"},
 
     # Italy Serie A
-    {"league":"Italy Serie A","home":"Torino","away":"Sassuolo"},
+    {"league":"Italy Serie A","home":"Cagliari","away":"Udinese"},
+    {"league":"Italy Serie A","home":"Lazio","away":"Inter"},
+    {"league":"Italy Serie A","home":"Lecce","away":"Juventus"},
 
     # Germany Bundesliga
-    {"league":"Germany Bundesliga","home":"Dortmund","away":"Frankfurt"},
-
-    # France Ligue 1
-    {"league":"France Ligue 1","home":"Lens","away":"Nantes"},
+    {"league":"Germany Bundesliga","home":"Augsburg","away":"M'Gladbach"},
+    {"league":"Germany Bundesliga","home":"Hoffenheim","away":"Werder Bremen"},
+    {"league":"Germany Bundesliga","home":"RB Leipzig","away":"St. Pauli"},
+    {"league":"Germany Bundesliga","home":"Stuttgart","away":"Leverkusen"},
+    {"league":"Germany Bundesliga","home":"Wolfsburg","away":"Bayern"},
 ]
 options = [f"{m['league']} | {m['home']} vs {m['away']}" for m in matches]
 selected = st.selectbox("Select Match", range(len(options)), format_func=lambda i: options[i])
